@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    
+
+    
+    <title>Для чего нужен Observability Engineering | Kubernest tech blog</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="Оbservability, Observability Engineering" />
+    
+    <meta name="description" content="Оbservability - это показатель того, насколько легко мы можем понять внутреннее состояние системы по её внешним проявлениям. В программных системах наблюдаемость — это возможность собирать данные о вы">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Для чего нужен Observability Engineering">
+<meta property="og:url" content="https://blog.kubernest.com/2024/10/01/observability/engineering/index.html">
+<meta property="og:site_name" content="Kubernest tech blog">
+<meta property="og:description" content="Оbservability - это показатель того, насколько легко мы можем понять внутреннее состояние системы по её внешним проявлениям. В программных системах наблюдаемость — это возможность собирать данные о вы">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://blog.kubernest.com/images/kubernest_pm.png">
+<meta property="article:published_time" content="2024-10-01T09:18:00.000Z">
+<meta property="article:modified_time" content="2024-11-19T19:55:11.780Z">
+<meta property="article:author" content="авторы проекта kubernest">
+<meta property="article:tag" content="Оbservability, Observability Engineering">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.kubernest.com/images/kubernest_pm.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Kubernest tech blog" type="application/atom+xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss-feed.xml" />
+     
+
+     
+        <link rel="amphtml" href="https://blog.kubernest.com/amp2024/10/01/observability/engineering/">
+     
+
+
+    
+        <link rel="icon" href="/css/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+        <link rel="icon" type="image/png" sizes="120x120" href="/apple-touch-icon-120x120.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+    
+
+    
+       <!-- Yandex.RTB -->
+       <script>window.yaContextCb=window.yaContextCb||[]</script>
+       <script src="https://yandex.ru/ads/system/context.js" async></script>
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/3.5.0/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PWEJT515P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4PWEJT515P');
+</script>
+<!-- End Google Analytics -->
+
+    
+    
+        <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(86613025, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<!-- /Yandex.Metrika counter -->
+    
+    
+    
+
+
+</head>
+
+<body>
+         <div id="rec541324929" class="r t-rec" style=" " data-animationappear="off" data-record-type="131">
+            <!-- T123 -->
+            <div class="t123">
+                <div class="t-container_100 ">
+                    <div class="t-width t-width_100 ">
+                        <style>
+                            html, html *, body, body * {
+                                cursor: none;
+                            }
+    
+                            .cursor-dot, .cursor-dot-outline {
+                                mix-blend-mode: normal;
+                                pointer-events: none;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                border-radius: 50%;
+                                opacity: 0;
+                                position: fixed;
+                                -webkit-transform: translate(-50%, -50%);
+                                transform: translate(-50%, -50%);
+                                -webkit-transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                            }
+    
+                            .cursor-dot {
+                                z-index: 99999999;
+                                width: 8px;
+                                height: 8px;
+                                background-color: rgba(0, 195, 255, 0.72);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #016ffe;
+                            }
+    
+                            .cursor-dot-outline {
+                                z-index: 99999998;
+                                width: 36px;
+                                height: 36px;
+                                background-color: rgb(0, 162, 255);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #000;
+                                filter: blur(18px);
+                            }
+                        </style>
+                        <script>
+    
+                            $("body").prepend('<div class="cursor-dot-outline"></div>');
+                            $("body").prepend('<div class="cursor-dot"></div>');
+    
+                            var cursor = {
+                                delay: 8,
+                                _x: 0,
+                                _y: 0,
+                                endX: (window.innerWidth / 2),
+                                endY: (window.innerHeight / 2),
+                                cursorVisible: true,
+                                cursorEnlarged: false,
+                                $dot: document.querySelector('.cursor-dot'),
+                                $outline: document.querySelector('.cursor-dot-outline'),
+    
+                                init: function() {
+                                    this.dotSize = this.$dot.offsetWidth;
+                                    this.outlineSize = this.$outline.offsetWidth;
+    
+                                    this.setupEventListeners();
+                                    this.animateDotOutline();
+                                },
+    
+                                setupEventListeners: function() {
+                                    var self = this;
+    
+                                    document.querySelectorAll('a').forEach(function(el) {
+                                        el.addEventListener('mouseover', function() {
+                                            self.cursorEnlarged = true;
+                                            self.toggleCursorSize();
+                                        });
+                                        el.addEventListener('mouseout', function() {
+                                            self.cursorEnlarged = false;
+                                            self.toggleCursorSize();
+                                        });
+                                    });
+    
+                                    document.addEventListener('mousedown', function() {
+                                        self.cursorEnlarged = true;
+                                        self.toggleCursorSize();
+                                    });
+                                    document.addEventListener('mouseup', function() {
+                                        self.cursorEnlarged = false;
+                                        self.toggleCursorSize();
+                                    });
+    
+                                    document.addEventListener('mousemove', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+    
+                                        self.endX = e.clientX;
+                                        self.endY = e.clientY;
+                                        self.$dot.style.top = self.endY + 'px';
+                                        self.$dot.style.left = self.endX + 'px';
+                                    });
+    
+                                    document.addEventListener('mouseenter', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    });
+    
+                                    document.addEventListener('mouseleave', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    });
+                                },
+    
+                                animateDotOutline: function() {
+                                    var self = this;
+    
+                                    self._x += (self.endX - self._x) / self.delay;
+                                    self._y += (self.endY - self._y) / self.delay;
+                                    self.$outline.style.top = self._y + 'px';
+                                    self.$outline.style.left = self._x + 'px';
+    
+                                    requestAnimationFrame(this.animateDotOutline.bind(self));
+                                },
+    
+                                toggleCursorSize: function() {
+                                    var self = this;
+    
+                                    if (self.cursorEnlarged) {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(4)';
+                                        self.$outline.style.transform = "translate(-50%, -50%) scale(0.00)";
+                                    } else {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(1)';
+                                        self.$outline.style.transform = 'translate(-50%, -50%) scale(1)';
+                                    }
+                                },
+    
+                                toggleCursorVisibility: function() {
+                                    var self = this;
+    
+                                    if (self.cursorVisible) {
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    } else {
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    }
+                                }
+                            }
+                            cursor.init();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">                                                                                                                                                          
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo">
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">Главная</a>
+                                </li>
+                            
+                                    <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/">Golang</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/Algorithms/">Algorithms</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/GRPC/">GRPC</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/">Kafka</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a></li></ul></li></ul>
+                                
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" target="_blank" rel="noopener" href="https://kubernest.com/index.html">О сайте</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+<div class="ya-site-form ya-site-form_inited_no" data-bem="{&quot;action&quot;:&quot;/search.html&quot;,&quot;arrow&quot;:false,&quot;bg&quot;:&quot;transparent&quot;,&quot;fontsize&quot;:12,&quot;fg&quot;:&quot;#000000&quot;,&quot;language&quot;:&quot;ru&quot;,&quot;logo&quot;:&quot;rb&quot;,&quot;publicname&quot;:&quot;����� �� ����� GoXpert&quot;,&quot;suggest&quot;:true,&quot;target&quot;:&quot;_blank&quot;,&quot;tld&quot;:&quot;ru&quot;,&quot;type&quot;:2,&quot;usebigdictionary&quot;:true,&quot;searchid&quot;:2519671,&quot;input_fg&quot;:&quot;#000000&quot;,&quot;input_bg&quot;:&quot;#ffffff&quot;,&quot;input_fontStyle&quot;:&quot;normal&quot;,&quot;input_fontWeight&quot;:&quot;normal&quot;,&quot;input_placeholder&quot;:&quot;&quot;,&quot;input_placeholderColor&quot;:&quot;#000000&quot;,&quot;input_borderColor&quot;:&quot;#7f9db9&quot;}">
+<form action="https://yandex.ru/search/site/" method="get" target="_blank" accept-charset="utf-8">
+<input type="hidden" name="searchid" value="2519671"/>
+<input type="hidden" name="l10n" value="ru"/>
+<input type="hidden" name="reqenc" value=""/>
+<input type="search" name="text" value=""/>
+<input type="submit" value="�����"/>
+</form>
+</div>
+    <style type="text/css">.ya-page_js_yes .ya-site-form_inited_no { display: none; }
+</style>
+<script type="text/javascript">
+(function(w,d,c){var s=d.createElement('script'),h=d.getElementsByTagName('script')[0],e=d.documentElement;
+if((' '+e.className+' ').indexOf(' ya-page_js_yes ')===-1)
+{e.className+=' ya-page_js_yes';}s.type='text/javascript';
+s.async=true;s.charset='utf-8';
+s.src=(d.location.protocol==='https:'?'https:':'http:')+'//site.yandex.net/v2.0/js/all.js';
+h.parentNode.insertBefore(s,h);(w[c]||(w[c]=[])).push(function(){
+
+Ya.Site.Form.init()
+
+})})(window,document,'yandex_site_callbacks');</script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a>
+    </h1>
+</div>
+
+                        <div class="main-body-content">
+                            <article id="post-observability/engineering" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Для чего нужен Observability Engineering
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+  <div class="article-date">
+    <i class="fa fa-calendar"></i>
+    <a href="/2024/10/01/observability/engineering/" class="article-date">
+       <time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time>
+    </a>
+  </div>
+
+
+<div class="article-date">
+  <i class="fa fa-calendar-plus-o"></i>
+  <a href="/2024/10/01/observability/engineering/" class="article-date">
+     <time datetime="2024-11-19T19:55:11.780Z" itemprop="dateModified">2024-11-19</time>
+  </a>
+</div>
+
+
+                
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%D0%9Ebservability-Observability-Engineering/" rel="tag">Оbservability, Observability Engineering</a>
+    </div>
+
+                
+
+                
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+
+            
+
+            
+
+            <!-- feed_rem_st --><!-- feed_rem_end --><h2 id="Краткое-содержание-статьи"><a href="#Краткое-содержание-статьи" class="headerlink" title="Краткое содержание статьи"></a>Краткое содержание статьи</h2><p>• Observability - это показатель того, насколько легко можно понять внутреннее состояние системы по её внешним проявлениям.<br>• Observability - это не просто дань моде, а новый подход к мониторингу и контролю производительности приложения.<br>• Observability появилась не вчера, а имеет долгую историю в теории управления, теории систем и сфере обработки сигналов.<br>• Observability повышает ROI, так как команда быстрее и эффективнее находит и исправляет причины падения производительности.<br>• Observability подходит для любых систем и инженеров, включая информационную безопасность.<br>• Observability - это культура, в которой каждый инженер понимает разницу между observability и мониторингом и инструментирует код в поддержку наблюдаемости.</p>
+<h2 id="Observability-это-не-модное-словечко"><a href="#Observability-это-не-модное-словечко" class="headerlink" title="Observability - это не модное словечко"></a>Observability - это не модное словечко</h2><p>Добрый день! Меня зовут Дмитрий Сигаев и я немного поделюсь своим опытом в разработки высоконагруженных системах.<br>Сегодня мы поговорим об Оbservability.</p>
+<p>Замечали, как часто в ИТ-отрасли появляется модное словечко, и тут же все начинают вставлять его в описание своих продуктов, чтобы привлечь побольше внимания?<br>Сейчас у нас в тренде observability (наблюдаемость), и многие вендоры уже берут его на вооружение.<br>Что такое observability? Просто навороченная версия мониторинга? Быстрее, выше, сильнее, настоящий Чак Норрис среди DevOps-инструментов! Так и хочется прикупить себе наблюдаемости, правда?<br>Давайте не будем поддаваться всеобщему ажиотажу и попробуем разобраться, что это такое и откуда вся шумиха.</p>
+<h2 id="Основы-мониторинга"><a href="#Основы-мониторинга" class="headerlink" title="Основы мониторинга"></a>Основы мониторинга</h2><p>Начнём с того, что мы все уже знаем и любим — мониторинг.</p>
+<p>Мониторинг — это действие. Мы мониторим свои приложения и системы, чтобы знать, в каком они состоянии. Мы можем просто убедиться, работает сервис или нет, или провести более полную проверку работоспособности и производительности. С помощью мониторинга мы ищем проблемы и аномалии, а потом докапываемся до их причины и анализируем требования к ресурсам и тренды производительности.</p>
+<p>Это простейшие задачи, но мониторинг может больше. Например, с его помощью разработчики могут корректировать свой подход к написанию кода, чтобы повысить производительность, а архитекторы — экспериментировать с облачными паттернами и моделями, чтобы найти лучшее соотношение цены и качества.</p>
+<p>Мониторинговые решения используют разные приёмы, вроде инструментирования и трассировки, чтобы собирать, обрабатывать, коррелировать и анализировать самые разные метрики в современных стеках приложений. Для полноты картины добавьте сюда синтетические транзакции и аналитику взаимодействия пользователей с приложениями.</p>
+<h2 id="Observability-мифы-и-реальность"><a href="#Observability-мифы-и-реальность" class="headerlink" title="Observability: мифы и реальность"></a>Observability: мифы и реальность</h2><p>Откуда взялось это новое слово — observability? Не такое уж оно, кстати, и новое. Оно пришло к нам из инженерного дела и теории управления.</p>
+<p><img src="/images/kubernest_pm.png" alt="Kubernest P(rocess) M(anager) 2"></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Observability">Как гласит его определение</a>, это показатель того, насколько легко мы можем понять внутреннее состояние системы по её внешним проявлениям. Если мониторинг — это действие, то observability  — это свойство системы. Когда наши ИТ-системы и приложения не дают нам заглянуть внутрь, никакой мониторинг тут не поможет. Я не инженер, но это понятно даже мне.</p>
+<p>Учитывая характеристики современных приложений и темпы их выпуска, без наблюдаемости не обойтись. Мы упаковываем рабочие нагрузки в контейнеры и разбиваем приложения на микросервисы — к таким динамичным и легко масштабируемым системам не получится по старинке намертво прикрутить инструменты мониторинга. Нам нужны современные методы инструментирования, чтобы лучше понимать свойства приложения и его производительность в сложных распределённых системах на протяжении всего жизненного цикла.</p>
+<h2 id="Инструменты-observability"><a href="#Инструменты-observability" class="headerlink" title="Инструменты observability"></a>Инструменты observability</h2><p><img src="/images/Landscape1.png" alt="Kubernest P(rocess) M(anager) 2"></p>
+<p>Добиться наблюдаемости можно с помощью инструментов, которые сообщают о происходящем в приложении через логи, метрики и события. Трассировка, например, помогает достоверно оценить производительность приложения и состояние сервиса, потому что измеряет все выполняемые действия в разных компонентах. Ещё можно собирать метрики и анализировать их при развёртывании контейнеризованного приложения в Kubernetes. На уровне развёртывания мы можем лучше понять систему по работе, которую она выполняет, при этом динамически меняясь и масштабируясь.</p>
+<p>Улучшая observability, мы включаем в поле обзора больше компонентов приложения, от мобильного и веб-фронтэнда до инфраструктуры. Раньше пришлось бы собирать и анализировать информацию из многих источников — логи приложения, данные временных рядов и т. д. Сейчас системы устроены сложнее, и чтобы по-настоящему оценить опыт пользователя, мы должны анализировать данные в контексте того, как он использует и потребляет мобильные и веб-приложения.</p>
+<h2 id="Человеческий-фактор"><a href="#Человеческий-фактор" class="headerlink" title="Человеческий фактор"></a>Человеческий фактор</h2><p>Разные инновационные инструменты, конечно, помогают улучшать observability, но давайте не будем забывать о людях. Даже самая эффективная система мониторинга мало что даст, если не использовать её при проектировании, разработке и тестировании приложений. Если систему сложно применять в работе напрямую, она будет стоять и пылиться.<br>Например, в компанни ОККО используется система мониторинга и поиска уязвимостей luntry. в данной системе можно настраивать политики безопастности, смотреть сетевые взаимодействия компонент, но данная системы не используется по назначению и нет инженеров которые ей пользуеются. </p>
+<p><img src="/images/request_time.png" alt="Kubernest Jaeger"></p>
+<p>Поэтому нужно максимально органично встроить мониторинг прямо в конвейер развёртывания. Например, как при развёртывании кластера Kubernetes, когда не приходится долго возиться с конфигурацией и прерывать рабочие процессы. Ещё можно повысить наблюдаемость, наладив наблюдение за производительностью приложения на стороне сервера и анализируя время отклика на стороне клиента во время нагрузочного тестирования. Это довольно неплохой способ найти причину проблем при масштабном тестировании. Дело тут не в инновационности подхода, а в его простоте и возможности применять его напрямую.</p>
+<p>Чтобы повысить наблюдаемость систем, мы должны менять саму культуру и отношение людей. Если просто отдать приказ и ругать за его нарушение, мы ничего не добьёмся. В этом смысле DevOps-команды всегда будут искать возможности показать, как повысить observability приложений и почему это так ценно. Иногда достаточно несколько минут посидеть над топологией приложения, чтобы выявить узкие места и компоненты, которым не помешало бы инструментирование. Ещё одна хорошая возможность — после серьёзного инцидента или релиза. Главное здесь — сообща работать над улучшениями, а не искать виноватых.</p>
+<p>Мы должны приучить себя и коллег всегда думать о наблюдаемости системы. Можно начать с мелочей, которые быстро принесут результат, а затем мало-помалу формулировать эффективные рекомендации по проектированию системы мониторинга и стратегии совершенствования. Сейчас у многих организаций уже есть своя команда инженеров по observability. Кто-то идёт ещё дальше и включает эту тему в программы обучения новых сотрудников.</p>
+<p>Изучите реальный опыт других компаний и отдельных экспертов. Например, почитайте хорошие статьи Синди Шридхаран (Cindy Sridharan) или послушайте спикеров на конференции Monitorama. Все они отлично разбираются в теме и понимают, что observability нельзя просто купить. Это важное свойство сложных приложений, которое требует современных подходов к инструментированию и мониторингу.</p>
+<h1 id="10-фактов-о-observability-которые-должен-знать-каждый-технический-директор"><a href="#10-фактов-о-observability-которые-должен-знать-каждый-технический-директор" class="headerlink" title="10 фактов о observability, которые должен знать каждый технический директор"></a>10 фактов о observability, которые должен знать каждый технический директор</h1><p>Больше всего пользы observability принесёт в культуре, где инженеры привыкли искать причину любой ошибки.</p>
+<p>Всё самое интересное на тему observability мы слышим от реальных инженеров. Например, специалистов из Twitter и Netflix, управляющих системами, которые усложняются прямо на глазах.</p>
+<p>Несложно понять, почему инженеры, работающие с современными облачными системами, так болеют за observability — традиционные подходы к мониторингу не дают той же видимости и практической информации.</p>
+<p>Кстати, observability — это не только про сложные облачные системы. Её нужно реализовать на всех уровнях организации, чтобы она проявилась во всей красе.</p>
+<p>В этой статье я собрали рекомендации по observability для технических директоров и других руководителей, которые пусть и не занимаются наблюдаемостью каждый день, но должны понимать, что это такое.</p>
+<p>В конце концов, пока инженеры по наблюдаемости не получат полную поддержку руководства, их инициативы редко будут давать ожидаемый результат.</p>
+<h3 id="Факт-1-Что-такое-observability"><a href="#Факт-1-Что-такое-observability" class="headerlink" title="Факт 1. Что такое observability"></a>Факт 1. Что такое observability</h3><p>Observability — это показатель того, насколько легко можно понять внутреннее состояние системы по её внешним проявлениям. Это самое общее определение, применимое к любой системе, не только в ИТ.</p>
+<p>Например, мы можем собрать данные о производительности (частота и продолжительность запросов, процент ошибок) отдельных микросервисов распределённого приложения, а потом сопоставить эти данные, чтобы оценить работоспособность приложения в целом.</p>
+<p>Команда может собирать данные не только из приложений и инфраструктуры, но и из других ресурсов, например конвейеров CI/CD или систем поддержки клиентов, чтобы получить больше контекста. Сопоставляя все эти данные, можно определить, что происходит внутри приложения, и догадаться, из-за каких внешних событий изменилось поведение.</p>
+<h3 id="Факт-2-Observability-—-не-просто-дань-моде"><a href="#Факт-2-Observability-—-не-просто-дань-моде" class="headerlink" title="Факт 2. Observability — не просто дань моде"></a>Факт 2. Observability — не просто дань моде</h3><p>Руководители должны понимать, что observability — это не просто очередной хит сезона. Это совершенно новый подход к мониторингу и контролю производительности приложения.</p>
+<p>Чуть позже мы ещё поговорим об истории observability и рассмотрим, чем она отличается от мониторинга и подобных практик. А пока просто знайте, что observability — это полноценная дисциплина, с помощью которой можно понять, что происходит в очень сложных и динамичных распределённых окружениях, где работает современный бизнес.</p>
+<p>По поводу наблюдаемости есть разные мнения. Не все восторженные выкрики о наблюдаемости правда. Главное помнить — сама по себе наблюдаемость не решит всех проблем с управлением производительностью в организации.</p>
+<p>В этом плане она мало чем отличается от других хайповых понятий, вроде DevOps или облачных вычислений, которые порой обрастают мифами, но все же заметно меняют всю ИТ-отрасль.</p>
+<h3 id="Факт-3-Observability-появилась-не-вчера"><a href="#Факт-3-Observability-появилась-не-вчера" class="headerlink" title="Факт 3. Observability появилась не вчера"></a>Факт 3. Observability появилась не вчера</h3><p>Это солидная концепция с долгой историей.</p>
+<p>Впервые мир услышал о ней ещё в 1960-х годах, когда инженер и изобретатель Рудольф Кальман опубликовал свой труд в области теории управления. В последующие десятилетия observability стала важным понятием в теории управления, теории систем и сфере обработки сигналов.</p>
+<p>В ИТ-отрасли на неё обратили внимание только в середине 2010-х, когда о ней заговорили инженеры из крупных ИТ-компаний.</p>
+<h3 id="Факт-4-Observability-и-мониторинг-видимость-телеметрия"><a href="#Факт-4-Observability-и-мониторинг-видимость-телеметрия" class="headerlink" title="Факт 4. Observability и мониторинг/видимость/телеметрия"></a>Факт 4. Observability и мониторинг/видимость/телеметрия</h3><p><img src="/images/kubernest_grafana.png" alt="Kubernest Grafana"></p>
+<p>Observability — это не синоним мониторинга. Да, оба понятия связаны с пониманием происходящего в системе, но мониторинг показывает сам факт проблемы, а observability помогает понять, что пошло не так и почему это случилось.</p>
+<table>
+<thead>
+<tr>
+<th>Мониторинг</th>
+<th>Observability</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Сломалось или нет?</td>
+<td>Почему сломалось?</td>
+</tr>
+<tr>
+<td>Реагируем быстро, но после инцидента</td>
+<td>Предотвращаем инциденты, сокращаем их продолжительность и последствия</td>
+</tr>
+<tr>
+<td>Сервис работает?</td>
+<td>Насколько эффективно работает сервис?</td>
+</tr>
+<tr>
+<td>Разрозненные данные</td>
+<td>Тесно связанные данные</td>
+</tr>
+<tr>
+<td>Пассивно потребляем данные и метрики системы</td>
+<td>Активно изучаем свою среду</td>
+</tr>
+</tbody></table>
+<p>Observability развивает и продолжает мониторинговые процессы, чтобы мы могли глубже заглянуть в сложные системы. Инструменты мониторинга обычно просто собирают данные и иногда отправляют оповещения, если возникла аномалия или сработал настроенный триггер. Observability позволяет сопоставить данные из отдельных систем, чтобы получить богатый контекст для каждой проблемы, обнаруженной с помощью мониторинга.</p>
+<p>От видимости observability отличается тем, что помогает найти причину проблемы, а не просто заметить саму проблему.</p>
+<p>Если телеметрия даёт нам голые данные, то observability снабжает их контекстом, чтобы мы могли интерпретировать их. </p>
+<p>Получается, что мониторинг, видимость и телеметрия поддерживают наблюдаемость, но наблюдаемость копает глубже и указывает на конкретные меры, которые мы должны принять.</p>
+<p>Почему ИТ-отрасль так долго шла к наблюдаемости? Скорее всего потому, что только к 2015 году у разработчиков и ИТ-инженеров возникла необходимость создавать, развёртывать и администрировать очень динамичные распределённые системы, в десятки раз более сложные, чем их предшественники. Когда на смену монолитам и виртуальным машинам пришли контейнеры, мультиоблака и микросервисы, организации стали искать новые способы заглянуть внутрь своих систем, потому что традиционный мониторинг уже не справлялся. Тут-то они и вспомнили про наблюдаемость, которая за несколько десятилетий уже доказала свою состоятельность в инженерных сферах за пределами ИТ.</p>
+<h3 id="Факт-5-Observability-повышает-ROI"><a href="#Факт-5-Observability-повышает-ROI" class="headerlink" title="Факт 5. Observability повышает ROI"></a>Факт 5. Observability повышает ROI</h3><p><img src="/images/kubernest-dashboard-visuals.gif" alt="Kubernest OpenObserve"></p>
+<p>С финансовой точки зрения, observability выгоднее, чем только мониторинг и телеметрия.</p>
+<p>Отчасти дело в том, что команда быстрее и эффективнее находит и исправляет причины падения производительности, а значит сервисы реже простаивают, а клиенты реже сталкиваются с проблемами, что повышает доходы и лояльность.</p>
+<p>Кроме того, инженеры, которые используют инструменты observability, видят проблему в контексте и могут быстрее найти и устранить её причину, чтобы скорее вернуться к другим важным делам. Например, внедрять новые функции, совершенствовать процессы или оптимизировать приложения, чтобы повысить их надёжность и сократить число ошибок.</p>
+<h3 id="Факт-6-Observability-вписывается-в-любые-системы"><a href="#Факт-6-Observability-вписывается-в-любые-системы" class="headerlink" title="Факт 6. Observability вписывается в любые системы"></a>Факт 6. Observability вписывается в любые системы</h3><p><img src="/images/kubernest_opencve.png" alt="Kubernest OpenCVE"></p>
+<p>Обычно мы говорим о observability в контексте облачных микросервисных приложений, но по сути её можно применить к любой ИТ-среде или архитектуре.</p>
+<p>Например, мы можем сопоставлять изменения производительности в монолитном приложении с изменениями в процессах CI/CD, с помощью которых мы его создаём. Точно так же мы можем собирать ценную информацию об уязвимостях на локальном сервере или в частном дата-центре.</p>
+<p>Конечно, традиционным приложениям observability нужна не так сильно, как облачным, но всё равно принесёт много пользы. На самом деле, наблюдаемость пригодится любому приложению, в любой технологической парадигме.</p>
+<h3 id="Факт-7-Чем-больше-данных-тем-лучше"><a href="#Факт-7-Чем-больше-данных-тем-лучше" class="headerlink" title="Факт 7. Чем больше данных, тем лучше"></a>Факт 7. Чем больше данных, тем лучше</h3><p>Количество данных о приложении не перерастёт в качество, если мы не сможем переварить такой объём. Просто будем зря платить за лишнее хранилище и вычислительные ресурсы.</p>
+<p>К счастью, инструменты наблюдаемости умеют эффективно сопоставлять разрозненные наборы данных, поэтому любые данные принесут пользу. Наблюдаемость нужна, чтобы быстро находить причину проблемы, видеть связь между разными проблемами и обнаруживать падение производительности.</p>
+<p>Для этого мы собираем данные отовсюду, а затем анализируем их и выстраиваем контекст, сопоставляя данные из разных систем, например конвейеров CI/CD, платформ обслуживания клиентов и т. д.</p>
+<p>В общем, если мы наладили , никакие данные не будут лишними. Чем больше данных и чем больше источников данных, тем проще нам будет выявлять и понимать сложные проблемы.</p>
+<h3 id="Факт-8-Observability-для-всех-и-каждого"><a href="#Факт-8-Observability-для-всех-и-каждого" class="headerlink" title="Факт 8. Observability для всех и каждого"></a>Факт 8. Observability для всех и каждого</h3><p>Observability подходит не только для любых систем, но и для любых инженеров.</p>
+<p>Информационная безопасность, например, требует специфического набора навыков, а наблюдаемость понятна, приятна и посильна каждому разработчику и инженеру.</p>
+<p>Мы уже говорили, что observability используется не только в ИТ, но и в других инженерных дисциплинах, для работы с ней не нужен отдельный диплом.</p>
+<h3 id="Факт-9-Observability-—-это-культура"><a href="#Факт-9-Observability-—-это-культура" class="headerlink" title="Факт 9. Observability — это культура"></a>Факт 9. Observability — это культура</h3><p>Observability не ограничивается набором инструментов и рабочих процессов. Да, конечно, понадобится специальная платформа для сбора, сопоставления и анализа данных из разных систем, но одной её будет недостаточно.</p>
+<p>Нужна целая культура, в которой каждый инженер понимает разницу между observability и мониторингом и инструментирует код в поддержку наблюдаемости.</p>
+<p>Больше всего пользы observability принесёт в культуре, где инженеры привыкли искать причину любой ошибки. В развитии культуры наблюдаемости должны участвовать все заинтересованные лица, включая руководство.</p>
+<h3 id="Факт-10-Начните-прямо-сейчас"><a href="#Факт-10-Начните-прямо-сейчас" class="headerlink" title="Факт 10. Начните прямо сейчас"></a>Факт 10. Начните прямо сейчас</h3><p>Рано или поздно всем нам придётся реализовать observability. Это лучший способ управлять производительностью в сложных облачных средах, где сегодня работают ИТ-организации. Даже если вы пока ещё не до конца перешли в облако, наблюдаемость принесёт пользу в локальной среде.</p>
+<p>Не думайте, что только избранные ИТ-гиганты могут позволить себе observability. Она доступна и полезна абсолютно всем компаниям во всех отраслях. Было бы ошибкой десять лет ждать развития облачных технологий, прежде чем решиться использовать сервисы в публичных облаках. То же самое можно сказать и о observability.</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://blog.kubernest.com/2024/10/01/observability/engineering/" data-id="cm3onsm6t000068wlf3c79bdf" class="article-share-link"><i class="fa fa-share"></i>Поделиться</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "author": {
+            "@type": "Person",
+            "name": "авторы проекта kubernest"
+        },
+        "headline": "Для чего нужен Observability Engineering",
+        "image": "https://blog.kubernest.com/images/kubernest_pm.png",
+        "keywords": "Оbservability, Observability Engineering",
+        "genre": "Оbservability Observability Engineering",
+        "datePublished": "2024-10-01",
+        "dateCreated": "2024-10-01",
+        "dateModified": "2024-11-19",
+        "url": "https://blog.kubernest.com/2024/10/01/observability/engineering/",
+        "description": "Краткое содержание статьи• Observability - это показатель того, насколько легко можно понять внутреннее состояние системы по её внешним проявлениям.• Observability - это не просто дань моде, а новый п",
+        "wordCount": 2282
+    }
+</script>
+
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="vk_comments"></div>
+    <script type="text/javascript">
+      window.onload = function () {
+      VK.init({apiId: 52539355, onlyWidgets: true});
+      VK.Widgets.Comments("vk_comments", {limit: 20, attach: "*", autoPublish: 1, pageUrl: "https://blog.kubernest.com/2024/10/01/observability/engineering/"});
+    }
+   </script>
+
+    
+    </section>
+
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>Подписаться:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="vk" href="https://vk.com/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-vk"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="telegram" href="https://t.me/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-telegram"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="youtube" href="https://www.youtube.com/c/KuberNest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-youtube"></i>
+                    </a>
+                </li>
+                
+            
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="twitter" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-twitter"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="facebook" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-facebook"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/atom.xml" target="_blank" rel="noopener">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2024/10/01/kafka/consumer_group/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">новые</strong>
+        <p class="article-nav-title">
+        
+            Consumer Group Protocol
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2024/06/02/os/os_scheduler/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">старые</strong>
+        <p class="article-nav-title">Планировщик ОS</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">недавние</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/kafka/consumer_group/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/Kafka_Internals_Group.png)" alt="Consumer Group Protocol" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Kafka/">Kafka</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></p>
+                            <p class="item-title"><a href="/2024/10/01/kafka/consumer_group/" class="title">Consumer Group Protocol</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/observability/engineering/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/kubernest_pm.png)" alt="Для чего нужен Observability Engineering" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></p>
+                            <p class="item-title"><a href="/2024/10/01/observability/engineering/" class="title">Для чего нужен Observability Engineering</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/06/02/os/os_scheduler/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/os_sched_1.jpg)" alt="Планировщик ОS" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9E%D0%A1/">ОС</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a></p>
+                            <p class="item-title"><a href="/2024/06/02/os/os_scheduler/" class="title">Планировщик ОS</a></p>
+                            <p class="item-date"><time datetime="2024-06-02T15:32:20.263Z" itemprop="datePublished">2024-06-02</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/06/01/concurrency/go_scheduler/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/go_sched1.png)" alt="Планировщик GO" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a></p>
+                            <p class="item-title"><a href="/2024/06/01/concurrency/go_scheduler/" class="title">Планировщик GO</a></p>
+                            <p class="item-date"><time datetime="2024-06-01T09:35:00.000Z" itemprop="datePublished">2024-06-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/06/01/concurrency/go_scheduler_more/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/golang_scheduler_more1.png)" alt="Планировщик GO другой взгляд" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a></p>
+                            <p class="item-title"><a href="/2024/06/01/concurrency/go_scheduler_more/" class="title">Планировщик GO другой взгляд</a></p>
+                            <p class="item-date"><time datetime="2024-06-01T09:35:00.000Z" itemprop="datePublished">2024-06-01</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Категории</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">30</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/">Algorithms</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/">GRPC</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">28</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/">Kafka</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Consumer-Group/">Consumer Group</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">архивы</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">октябрь 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">июнь 2024</a><span class="archive-list-count">39</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Тэги</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Q-A/" rel="tag">Golang, Q&A</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka-Consumer-Group/" rel="tag">Kafka, Consumer Group</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Observability-Engineering/" rel="tag">Оbservability, Observability Engineering</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">Облако тэгов</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Golang-Q-A/" style="font-size: 20px;">Golang, Q&A</a> <a href="/tags/Kafka-Consumer-Group/" style="font-size: 10px;">Kafka, Consumer Group</a> <a href="/tags/%D0%9Ebservability-Observability-Engineering/" style="font-size: 10px;">Оbservability, Observability Engineering</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">ссылки</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://vk.com/kubernest">мы в vk</a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://www.youtube.com/c/Kubernest">мы в youtube</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2024 авторы проекта kubernest</p>
+                
+                <p>Powered by <a href="https://designest.ru/" target="_blank">DESIGNest Studio Ltd</a></p>
+                
+            </div>
+            <div class="footer-plugins">
+                
+			<!-- Yandex.RTB R-A-1394392-1 -->
+			<div id="yandex_rtb_R-A-1394392-1"></div>
+			<script>window.yaContextCb.push(()=>{Ya.Context.AdvManager.render({renderTo: 'yandex_rtb_R-A-1394392-1',  blockId: 'R-A-1394392-1' }) })</script>
+                
+              
+    
+
+
+            </div>
+        </div>
+    </div>
+</footer>                                                                                            
+
+    </div>
+    
+    
+    <script type="text/javascript">
+    var vk_shortname = 'true';
+    (function() {
+    var vk = document.createElement('script');
+    vk.type = 'text/javascript';
+    vk.async = true;
+    vk.src = '//vk.com/js/api/openapi.js?169'; 
+    vk.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+    || document.getElementsByTagName('body')[0]).appendChild(vk);
+    })();
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+</body>
+</html>
