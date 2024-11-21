@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    
+
+    
+    <title>Три столпа наблюдаемости | Kubernest tech blog</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="Оbservability, Logs" />
+    
+    <meta name="description" content="Журналы, метрики и трассировки часто называют тремя столпами наблюдаемости. Хотя доступ к журналам, метрикам и трассировкам сам по себе не делает системы более наблюдаемыми, это мощные инструменты, ко">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Три столпа наблюдаемости">
+<meta property="og:url" content="https://blog.kubernest.com/2024/07/07/observability/the-three-pillars/index.html">
+<meta property="og:site_name" content="Kubernest tech blog">
+<meta property="og:description" content="Журналы, метрики и трассировки часто называют тремя столпами наблюдаемости. Хотя доступ к журналам, метрикам и трассировкам сам по себе не делает системы более наблюдаемыми, это мощные инструменты, ко">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://blog.kubernest.com/images/open-telemetry2.png">
+<meta property="article:published_time" content="2024-07-07T09:20:00.000Z">
+<meta property="article:modified_time" content="2024-11-20T15:03:27.388Z">
+<meta property="article:author" content="авторы проекта kubernest">
+<meta property="article:tag" content="Оbservability, Logs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.kubernest.com/images/open-telemetry2.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Kubernest tech blog" type="application/atom+xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss-feed.xml" />
+     
+
+     
+        <link rel="amphtml" href="https://blog.kubernest.com/amp2024/07/07/observability/the-three-pillars/">
+     
+
+
+    
+        <link rel="icon" href="/css/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+        <link rel="icon" type="image/png" sizes="120x120" href="/apple-touch-icon-120x120.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+    
+
+    
+       <!-- Yandex.RTB -->
+       <script>window.yaContextCb=window.yaContextCb||[]</script>
+       <script src="https://yandex.ru/ads/system/context.js" async></script>
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/3.5.0/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PWEJT515P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4PWEJT515P');
+</script>
+<!-- End Google Analytics -->
+
+    
+    
+        <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(86613025, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<!-- /Yandex.Metrika counter -->
+    
+    
+    
+
+
+</head>
+
+<body>
+         <div id="rec541324929" class="r t-rec" style=" " data-animationappear="off" data-record-type="131">
+            <!-- T123 -->
+            <div class="t123">
+                <div class="t-container_100 ">
+                    <div class="t-width t-width_100 ">
+                        <style>
+                            html, html *, body, body * {
+                                cursor: none;
+                            }
+    
+                            .cursor-dot, .cursor-dot-outline {
+                                mix-blend-mode: normal;
+                                pointer-events: none;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                border-radius: 50%;
+                                opacity: 0;
+                                position: fixed;
+                                -webkit-transform: translate(-50%, -50%);
+                                transform: translate(-50%, -50%);
+                                -webkit-transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                            }
+    
+                            .cursor-dot {
+                                z-index: 99999999;
+                                width: 8px;
+                                height: 8px;
+                                background-color: rgba(0, 195, 255, 0.72);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #016ffe;
+                            }
+    
+                            .cursor-dot-outline {
+                                z-index: 99999998;
+                                width: 36px;
+                                height: 36px;
+                                background-color: rgb(0, 162, 255);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #000;
+                                filter: blur(18px);
+                            }
+                        </style>
+                        <script>
+    
+                            $("body").prepend('<div class="cursor-dot-outline"></div>');
+                            $("body").prepend('<div class="cursor-dot"></div>');
+    
+                            var cursor = {
+                                delay: 8,
+                                _x: 0,
+                                _y: 0,
+                                endX: (window.innerWidth / 2),
+                                endY: (window.innerHeight / 2),
+                                cursorVisible: true,
+                                cursorEnlarged: false,
+                                $dot: document.querySelector('.cursor-dot'),
+                                $outline: document.querySelector('.cursor-dot-outline'),
+    
+                                init: function() {
+                                    this.dotSize = this.$dot.offsetWidth;
+                                    this.outlineSize = this.$outline.offsetWidth;
+    
+                                    this.setupEventListeners();
+                                    this.animateDotOutline();
+                                },
+    
+                                setupEventListeners: function() {
+                                    var self = this;
+    
+                                    document.querySelectorAll('a').forEach(function(el) {
+                                        el.addEventListener('mouseover', function() {
+                                            self.cursorEnlarged = true;
+                                            self.toggleCursorSize();
+                                        });
+                                        el.addEventListener('mouseout', function() {
+                                            self.cursorEnlarged = false;
+                                            self.toggleCursorSize();
+                                        });
+                                    });
+    
+                                    document.addEventListener('mousedown', function() {
+                                        self.cursorEnlarged = true;
+                                        self.toggleCursorSize();
+                                    });
+                                    document.addEventListener('mouseup', function() {
+                                        self.cursorEnlarged = false;
+                                        self.toggleCursorSize();
+                                    });
+    
+                                    document.addEventListener('mousemove', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+    
+                                        self.endX = e.clientX;
+                                        self.endY = e.clientY;
+                                        self.$dot.style.top = self.endY + 'px';
+                                        self.$dot.style.left = self.endX + 'px';
+                                    });
+    
+                                    document.addEventListener('mouseenter', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    });
+    
+                                    document.addEventListener('mouseleave', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    });
+                                },
+    
+                                animateDotOutline: function() {
+                                    var self = this;
+    
+                                    self._x += (self.endX - self._x) / self.delay;
+                                    self._y += (self.endY - self._y) / self.delay;
+                                    self.$outline.style.top = self._y + 'px';
+                                    self.$outline.style.left = self._x + 'px';
+    
+                                    requestAnimationFrame(this.animateDotOutline.bind(self));
+                                },
+    
+                                toggleCursorSize: function() {
+                                    var self = this;
+    
+                                    if (self.cursorEnlarged) {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(4)';
+                                        self.$outline.style.transform = "translate(-50%, -50%) scale(0.00)";
+                                    } else {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(1)';
+                                        self.$outline.style.transform = 'translate(-50%, -50%) scale(1)';
+                                    }
+                                },
+    
+                                toggleCursorVisibility: function() {
+                                    var self = this;
+    
+                                    if (self.cursorVisible) {
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    } else {
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    }
+                                }
+                            }
+                            cursor.init();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">                                                                                                                                                          
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo">
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">Главная</a>
+                                </li>
+                            
+                                    <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/">Golang</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/Algorithms/">Algorithms</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/GRPC/">GRPC</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/">Kafka</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a></li></ul></li></ul>
+                                
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" target="_blank" rel="noopener" href="https://kubernest.com/index.html">О сайте</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+<div class="ya-site-form ya-site-form_inited_no" data-bem="{&quot;action&quot;:&quot;/search.html&quot;,&quot;arrow&quot;:false,&quot;bg&quot;:&quot;transparent&quot;,&quot;fontsize&quot;:12,&quot;fg&quot;:&quot;#000000&quot;,&quot;language&quot;:&quot;ru&quot;,&quot;logo&quot;:&quot;rb&quot;,&quot;publicname&quot;:&quot;����� �� ����� GoXpert&quot;,&quot;suggest&quot;:true,&quot;target&quot;:&quot;_blank&quot;,&quot;tld&quot;:&quot;ru&quot;,&quot;type&quot;:2,&quot;usebigdictionary&quot;:true,&quot;searchid&quot;:2519671,&quot;input_fg&quot;:&quot;#000000&quot;,&quot;input_bg&quot;:&quot;#ffffff&quot;,&quot;input_fontStyle&quot;:&quot;normal&quot;,&quot;input_fontWeight&quot;:&quot;normal&quot;,&quot;input_placeholder&quot;:&quot;&quot;,&quot;input_placeholderColor&quot;:&quot;#000000&quot;,&quot;input_borderColor&quot;:&quot;#7f9db9&quot;}">
+<form action="https://yandex.ru/search/site/" method="get" target="_blank" accept-charset="utf-8">
+<input type="hidden" name="searchid" value="2519671"/>
+<input type="hidden" name="l10n" value="ru"/>
+<input type="hidden" name="reqenc" value=""/>
+<input type="search" name="text" value=""/>
+<input type="submit" value="�����"/>
+</form>
+</div>
+    <style type="text/css">.ya-page_js_yes .ya-site-form_inited_no { display: none; }
+</style>
+<script type="text/javascript">
+(function(w,d,c){var s=d.createElement('script'),h=d.getElementsByTagName('script')[0],e=d.documentElement;
+if((' '+e.className+' ').indexOf(' ya-page_js_yes ')===-1)
+{e.className+=' ya-page_js_yes';}s.type='text/javascript';
+s.async=true;s.charset='utf-8';
+s.src=(d.location.protocol==='https:'?'https:':'http:')+'//site.yandex.net/v2.0/js/all.js';
+h.parentNode.insertBefore(s,h);(w[c]||(w[c]=[])).push(function(){
+
+Ya.Site.Form.init()
+
+})})(window,document,'yandex_site_callbacks');</script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a>
+    </h1>
+</div>
+
+                        <div class="main-body-content">
+                            <article id="post-observability/the-three-pillars" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Три столпа наблюдаемости
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+  <div class="article-date">
+    <i class="fa fa-calendar"></i>
+    <a href="/2024/07/07/observability/the-three-pillars/" class="article-date">
+       <time datetime="2024-07-07T09:20:00.000Z" itemprop="datePublished">2024-07-07</time>
+    </a>
+  </div>
+
+
+<div class="article-date">
+  <i class="fa fa-calendar-plus-o"></i>
+  <a href="/2024/07/07/observability/the-three-pillars/" class="article-date">
+     <time datetime="2024-11-20T15:03:27.388Z" itemprop="dateModified">2024-11-20</time>
+  </a>
+</div>
+
+
+                
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%D0%9Ebservability-Logs/" rel="tag">Оbservability, Logs</a>
+    </div>
+
+                
+
+                
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+
+            
+
+            
+
+            <!-- feed_rem_st --><!-- feed_rem_end --><h2 id="Краткое-содержание-статьи"><a href="#Краткое-содержание-статьи" class="headerlink" title="Краткое содержание статьи"></a>Краткое содержание статьи</h2><p>• Журналы, метрики и трассировки являются тремя столпами наблюдаемости в системах.<br>• Журналы событий предоставляют информацию о событиях и контекст для детального анализа.<br>• Метрики представляют числовые данные о поведении системы и помогают в создании информационных панелей.<br>• Трассировки обеспечивают видимость времени выполнения запроса в распределенной системе.<br>• Все три инструмента дополняют друг друга и обеспечивают наглядность поведения распределенных систем.<br>• Комбинация различных сигналов наблюдаемости необходима для эффективной отладки распределенных систем. </p>
+<p>Журналы, метрики и трассировки часто называют тремя столпами наблюдаемости. Хотя доступ к журналам, метрикам и трассировкам сам по себе не делает системы более наблюдаемыми, это мощные инструменты, которые, если их хорошо понимать, могут помочь в создании более эффективных систем.</p>
+<p>Добрый день! Меня зовут <a target="_blank" rel="noopener" href="http://kubernest.com/dmitry-sigaev/">Дмитрий Сигаев</a> и я немного поделюсь своим опытом в разработки высоконагруженных системах.<br>Сегодня мы поговорим об Оbservability, если быть более точным, то я расскажу как создать более эфективную систему с точки зрения наблюдаемости.</p>
+<h2 id="Журналы-событий-Event-Logs"><a href="#Журналы-событий-Event-Logs" class="headerlink" title="Журналы событий (Event Logs)"></a>Журналы событий (Event Logs)</h2><p>Журнал событий — это неизменяемая запись с меткой времени, в которой фиксируются отдельные события, произошедшие в определённый период времени. Журналы событий в целом бывают трёх видов, но по сути они одинаковы: метка времени и полезная нагрузка с некоторым контекстом. Три вида журналов событий:</p>
+<ul>
+<li>Открытый текст (Plaintext): Запись в журнале может представлять собой текст произвольной формы. Это также наиболее распространённый формат журналов.</li>
+<li>Структурированный (Structured): В последние дни об этом много говорили и писали. Как правило, эти журналы создаются в формате JSON.</li>
+<li>Двоичный (Binary): Подумайте о журналах в формате Protobuf, двоичных журналах MySQL, используемых для репликации и восстановления на определённый момент времени, журналах systemd, формате pflog брандмауэра BSD pf который часто служит интерфейсом для tcpdump.</li>
+</ul>
+<p><img src="/images/open-telemetry2.png" alt="Kubernest OpenTelemetry and Jaeger"></p>
+<p>Отладка редких или нерегулярных сбоев в работе систем часто требует отладки на очень высоком уровне детализации. Журналы событий, в частности, отлично подходят для получения ценной информации и подробного контекста о «длинном хвосте», который не отображается в средних значениях и процентилях. Таким образом, журналы событий особенно полезны для выявления непредвиденного поведения компонентов распределённой системы.</p>
+<p>Сбои в сложных распределённых системах редко возникают из-за одного конкретного события, произошедшего в одном конкретном компоненте системы. Часто в этом задействованы различные возможные триггеры в сильно взаимосвязанном графе компонентов. Просто взглянув на отдельные события, произошедшие в какой-либо системе в определённый момент времени, невозможно определить все такие триггеры. Чтобы выявить различные триггеры, необходимо выполнить следующие действия:</p>
+<ul>
+<li>Начните с симптома, выявленного с помощью метрики высокого уровня или события в журнале в конкретной системе</li>
+<li>Сделайте вывод о жизненном цикле запроса для различных компонентов распределенной архитектуры</li>
+<li>Повторяющиеся вопросы о взаимодействиях между различными частями системы</li>
+</ul>
+<p>Помимо определения судьбы запроса на протяжении всего его жизненного цикла (который обычно длится недолго), необходимо также уметь определять судьбу системы в целом (в течение периода, который на несколько порядков превышает жизненный цикл отдельного запроса).</p>
+<a href="/2024/10/01/observability/open-telemetry/" title="Трассировки">Трассировки</a> и метрики — это абстракция, созданная на основе журналов, которые предварительно обрабатывают и кодируют информацию по двум ортогональным осям: одна ориентирована на запросы (трассировка), другая — на систему (метрика).
+
+<p><img src="/images/open-telemetry.png" alt="Kubernest OpenTelemetry and Jaeger"></p>
+<h2 id="Плюсы-и-минусы-журналов-The-Pros-and-Cons-of-Logs"><a href="#Плюсы-и-минусы-журналов-The-Pros-and-Cons-of-Logs" class="headerlink" title="Плюсы и минусы журналов (The Pros and Cons of Logs)"></a>Плюсы и минусы журналов (The Pros and Cons of Logs)</h2><p>Журналы, безусловно, проще всего создавать. Тот факт, что журнал — это просто строка или фрагмент JSON или типизированных пар «ключ-значение», позволяет легко представлять любые данные в виде строки журнала. Большинство языков, фреймворков и библиотек поддерживают ведение журналов. Журналы также легко настраивать, поскольку добавить строку журнала так же просто, как добавить оператор печати. Журналы очень хорошо подходят для отображения подробной информации с богатым локальным контекстом, если пространство поиска ограничено событиями, произошедшими в одном сервисе.</p>
+<p>К сожалению, на этом польза от журналов заканчивается. Хотя создание журналов может быть простым, производительность различных популярных библиотек для ведения журналов оставляет желать лучшего. Большинство производительных библиотек для ведения журналов занимают очень мало места, если вообще занимают, и работают очень быстро. Однако библиотеки для ведения журналов по умолчанию во многих языках и фреймворках не являются лучшими в своём классе, а это значит, что приложение в целом может работать с неоптимальной производительностью из-за накладных расходов на ведение журналов. Кроме того, сообщения журнала могут быть потеряны, если не используется протокол RELP, гарантирующий надёжную доставку сообщений. Это становится особенно важным, когда данные журнала используются для выставления счетов или платежей.</p>
+<p><img src="/images/open-telemetry3.png" alt="Kubernest OpenTelemetry and Jaeger"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RELP - это не серебряная пуля</span><br><span class="line">RELP — это протокол, использующий модель «команда-ответ» (команда и ответ называются транзакцией RELP). Клиент RELP отправляет команды, а сервер RELP отвечает на эти команды.</span><br><span class="line"></span><br><span class="line">Сервер RELP предназначен для ограничения количества выполняемых команд с целью экономии ресурсов. Выбор в пользу использования RELP означает, что вы выбираете обратное давление и блокируете производителей, если сервер не может обрабатывать команды достаточно быстро.</span><br><span class="line"></span><br><span class="line">Хотя такие строгие требования могут применяться в сценариях, когда каждая строка журнала критически важна или необходима по закону для аудита, мониторинг и отладка редко, если вообще когда-либо, требуют таких строгих гарантий и сопутствующих сложностей.</span><br></pre></td></tr></table></figure>
+<hr>
+<p>Наконец, если библиотека ведения журналов не может динамически выбирать журналы, чрезмерное ведение журналов может негативно сказаться на производительности приложения в целом. Это усугубляется, когда ведение журналов не является асинхронным и обработка запросов блокируется при записи строки журнала на диск или stdout.</p>
+<h2 id="Делать-выборку-или-не-делать-выборку-To-Sample-or-Not-To-Sample"><a href="#Делать-выборку-или-не-делать-выборку-To-Sample-or-Not-To-Sample" class="headerlink" title="Делать выборку или не делать выборку?  (To Sample, or Not To Sample?)"></a>Делать выборку или не делать выборку?  (To Sample, or Not To Sample?)</h2><p>Часто предлагается разумное решение проблемы затрат на ведение журналов — выборка. Выборка — это метод, при котором из общей совокупности журналов событий, подлежащих обработке и хранению, выбирается небольшая часть. Ожидается, что эта часть будет микрокосмом совокупности событий, генерируемых системой.</p>
+<p>У выборки есть свои недостатки. Во-первых, эффективность выборки зависит от выбранных ключей или характеристик набора данных, на основе которых принимается решение о выборке. Кроме того, для большинства онлайн-сервисов необходимо определить, как выполнять динамическую выборку, чтобы частота выборки автоматически регулировалась в зависимости от характера входящего трафика. Многие системы, чувствительные к задержкам, имеют строгие ограничения, например, на количество процессорного времени, которое может быть потрачено на отправку данных мониторинга. В таких сценариях выборка может оказаться дорогостоящей с точки зрения вычислений.</p>
+<p>Ни одно обсуждение выборки не будет полным без упоминания вероятностных структур данных, способных хранить сводную информацию обо всём наборе данных. Подробное обсуждение этих методов выходит за рамки данного отчёта, но для тех, кому интересно узнать больше, есть хорошие ресурсы O’Reilly.</p>
+<hr>
+<p><img src="/images/kubernest_pm.png" alt="Kubernest P(rocess) M(anager) 2"></p>
+<p>Что касается обработки, необработанные журналы почти всегда нормализуются, фильтруются и обрабатываются с помощью таких инструментов, как Logstash, fluentd, Scribe или Heka, прежде чем они сохраняются в хранилище данных, таком как Elasticsearch или BigQuery. Если приложение генерирует большой объём журналов, то для их обработки с помощью Logstash может потребоваться дополнительная буферизация в брокере, таком как Kafka. В hosted-решениях, таких как BigQuery, есть квоты, которые нельзя превышать.</p>
+<p>Что касается хранилища, то, хотя Elasticsearch может быть фантастической поисковой системой, его использование сопряжено с реальными эксплуатационными расходами. Даже если в организации есть команда инженеров-операторов, которые являются экспертами в работе с Elasticsearch, могут существовать и другие недостатки. Например, нередко можно увидеть резкий спад на графиках в Kibana не потому, что трафик сервиса падает, а потому, что Elasticsearch не справляется с индексированием огромного объёма поступающих данных. Даже если обработка журналов не является проблемой для Elasticsearch, насколько мне известно, никто до конца не разобрался, как пользоваться пользовательским интерфейсом Kibana, не говоря уже о том, чтобы наслаждаться его использованием.</p>
+<h2 id="Ведение-журнала-как-проблема-потоковой-обработки-Logging-as-a-Stream-Processing-Problem"><a href="#Ведение-журнала-как-проблема-потоковой-обработки-Logging-as-a-Stream-Processing-Problem" class="headerlink" title="Ведение журнала как проблема потоковой обработки  (Logging as a Stream Processing Problem)"></a>Ведение журнала как проблема потоковой обработки  (Logging as a Stream Processing Problem)</h2><p>Данные о событиях используются не только для повышения производительности приложений и отладки. Они также являются источником всех аналитических данных. Эти данные часто имеют огромную ценность с точки зрения бизнес-аналитики, и обычно компании готовы платить как за технологии, так и за персонал, необходимый для анализа этих данных, чтобы принимать более взвешенные решения по продуктам.</p>
+<p>Интересным аспектом здесь является то, что между вопросами, на которые бизнес может захотеть получить ответы, и вопросами, на которые инженеры-программисты и SRE могут захотеть получить ответы во время отладки, есть поразительное сходство. Например, вот вопрос, который может быть важен для бизнеса:</p>
+<p>Отфильтруйте страны, в которых пользователи просмотрели эту статью менее 100 раз.</p>
+<p>В то же время с точки зрения отладки вопрос может выглядеть примерно так:</p>
+<p>Отфильтруйте страницы с аномально высокой нагрузкой, которые выполнили более 100 запросов к базе данных.</p>
+<p>Покажите мне только те страницы из Франции, загрузка которых заняла более 10 секунд.</p>
+<p>Оба этих запроса возможны благодаря событиям. События — это структурированные (при необходимости с указанием типа) пары «ключ-значение». Объединение бизнес-информации с информацией о времени выполнения запроса (таймеры, продолжительность и т. д.) позволяет использовать аналитические инструменты для мониторинга.</p>
+<p>Обработка журналов идеально вписывается в концепцию онлайн-аналитики (Online Analytics Processing - OLAP). Информация, полученная из систем OLAP, не сильно отличается от информации, полученной для отладки, анализа производительности или обнаружения аномалий на периферии системы. Один из способов обойти проблему задержки при вводе данных в Elasticsearch — или в хранилища на основе индексации в целом — заключается в том, чтобы рассматривать обработку журналов как задачу потоковой обработки для работы с большими объёмами данных с помощью минимального индексирования.</p>
+<p>Большинство аналитических конвейеров используют Kafka в качестве шины событий. Отправка обогащённых данных о событиях в Kafka позволяет выполнять поиск в реальном времени по потокам с помощью KSQL, потокового SQL-движка для Kafka.</p>
+<p>Обогащение бизнес-событий, отправляемых в Kafka, дополнительными данными о времени и другими метаданными, необходимыми для мониторинга, может быть полезным при перепрофилировании существующих инфраструктур потоковой обработки. Еще одним преимуществом этого шаблона является то, что эти данные можно регулярно удалять из журнала Kafka. Большинство данных о событиях, необходимых для отладки, представляют ценность только в течение относительно короткого периода времени после создания события, в отличие от любой бизнес-ориентированной информации, которая оценивается и сохраняется с помощью задания ETL. Конечно, это имеет смысл только в том случае, если Kafka уже является неотъемлемой частью организации. Внедрение Kafka в стек исключительно для анализа журналов в реальном времени — это перебор, особенно в компаниях, не использующих JVM, без значительного опыта работы с JVM.</p>
+<p>Альтернативой является Humio — облачное и локальное решение, которое рассматривает обработку журналов как задачу потоковой обработки. Данные журналов могут передаваться с каждого устройства напрямую в Humio без предварительной агрегации. Humio использует сложные алгоритмы сжатия для эффективного сжатия и извлечения данных журналов. Вместо априорного индексирования Humio позволяет выполнять сложные запросы к данным потоков событий в режиме реального времени. Поскольку Humio поддерживает текстовые журналы (формат, к которому привыкло подавляющее большинство разработчиков), специальная схема для чтения позволяет пользователям итеративно и интерактивно запрашивать данные журналов. Еще одна альтернатива — Honeycomb, облачное решение на основе Scuba от Facebook, которое принимает только структурированные события, но позволяет агрегировать данные во время чтения и выполнять быстрые запросы в реальном времени по миллионам событий.</p>
+<h2 id="Показатели-Metrics"><a href="#Показатели-Metrics" class="headerlink" title="Показатели (Metrics)"></a>Показатели (Metrics)</h2><p>Показатели — это числовое представление данных, измеренных за определённые промежутки времени. Показатели позволяют использовать возможности математического моделирования и прогнозирования для получения знаний о поведении системы за определённые промежутки времени в настоящем и будущем.</p>
+<p>Поскольку числа оптимизированы для хранения, обработки, сжатия и извлечения данных, метрики обеспечивают более длительное хранение данных, а также упрощают выполнение запросов. Это делает метрики идеально подходящими для создания информационных панелей, отражающих исторические тенденции. Метрики также позволяют постепенно снижать разрешение данных. По истечении определенного периода времени данные могут быть сгруппированы по дням или неделям.</p>
+<h3 id="Анатомия-современной-метрики-The-Anatomy-of-a-Modern-Metric"><a href="#Анатомия-современной-метрики-The-Anatomy-of-a-Modern-Metric" class="headerlink" title="Анатомия современной метрики (The Anatomy of a Modern Metric)"></a>Анатомия современной метрики (The Anatomy of a Modern Metric)</h3><p>Одним из самых больших недостатков баз данных исторических временных рядов было выявление показателей, которые плохо поддавались исследовательскому анализу или фильтрации.</p>
+<p>Особенно досадно, что в старых версиях Graphite нет тегов или меток. В современных системах мониторинга, таких как Prometheus и более новые версии Graphite, каждый временной ряд представлен с помощью имени метрики, а также дополнительных пар «ключ-значение», называемых метками (labels). Это обеспечивает высокую степень детализации модели данных.</p>
+<p>Метрика в Prometheus, как показано на рисунке, идентифицируется с помощью имени метрики и меток. Фактические данные, хранящиеся во временном ряду, называются выборкой и состоят из двух компонентов: значения float64 и метки времени с точностью до миллисекунды.</p>
+<p><img src="/images/kubernest-prom-metrics.png" alt="A Prometheus metric sample"></p>
+<p>Важно помнить, что метрики в Prometheus неизменяемы. Изменение названия метрики, добавление или удаление метки приведёт к созданию нового временного ряда.</p>
+<h3 id="Преимущества-метрик-перед-журналами-событий-Advantages-of-Metrics-over-Event-Logs"><a href="#Преимущества-метрик-перед-журналами-событий-Advantages-of-Metrics-over-Event-Logs" class="headerlink" title="Преимущества метрик перед журналами событий (Advantages of Metrics over Event Logs)"></a>Преимущества метрик перед журналами событий (Advantages of Metrics over Event Logs)</h3><p>В целом, самое большое преимущество мониторинга на основе метрик по сравнению с журналами заключается в том, что, в отличие от создания и хранения журналов, передача и хранение метрик требуют постоянных затрат. В отличие от журналов, стоимость метрик не увеличивается пропорционально пользовательскому трафику или любой другой активности системы, которая может привести к резкому увеличению объёма данных.</p>
+<p>При использовании метрик увеличение трафика приложения не приведёт к значительному увеличению использования дискового пространства, сложности обработки, скорости визуализации и операционных расходов, в отличие от журналов. Объём хранилища метрик увеличивается по мере увеличения количества комбинаций значений меток (например, при запуске большего количества хостов или контейнеров, при добавлении новых сервисов или при более тщательном мониторинге существующих сервисов), но агрегирование на стороне клиента может гарантировать, что трафик метрик не будет увеличиваться пропорционально пользовательскому трафику.</p>
+<hr>
+<h2 id="Примечание"><a href="#Примечание" class="headerlink" title="Примечание"></a>Примечание</h2><p>Клиентские библиотеки таких систем, как Prometheus, объединяют выборки временных рядов в процессе работы и отправляют их на сервер Prometheus после успешного сбора данных (который по умолчанию происходит раз в несколько секунд и может быть настроен). В отличие от клиентов statsd, которые отправляют UDP-пакет каждый раз, когда метрика записывается в демон statsd (что приводит к прямо пропорциональному увеличению количества отправляемых в statsd метрик по сравнению с трафиком, о котором сообщается!).</p>
+<hr>
+<p>Собранные показатели более податливы к математическим, вероятностным и статистическим преобразованиям, таким как выборка, агрегирование, обобщение и корреляция. Благодаря этим характеристикам показатели лучше подходят для оценки общего состояния системы.</p>
+<p>Метрики также лучше подходят для запуска оповещений, поскольку выполнение запросов к базе данных временных рядов в оперативной памяти гораздо эффективнее, не говоря уже о том, что это надёжнее, чем выполнение запроса к распределённой системе, такой как Elasticsearch, а затем агрегирование результатов перед принятием решения о необходимости запуска оповещения. Конечно, системы, которые для оповещения запрашивают только структурированные данные о событиях в оперативной памяти, могут быть немного дешевле, чем Elasticsearch. Недостатком здесь является то, что для большинства организаций эксплуатационные издержки, связанные с использованием большой кластерной базы данных в оперативной памяти, даже если она имеет открытый исходный код, не стоят того, чтобы тратить на это время, особенно когда есть гораздо более простые способы получать не менее полезные оповещения. Для предоставления такой информации лучше всего подходят метрики.</p>
+<h2 id="Недостатки-метрик-The-Drawbacks-of-Metrics"><a href="#Недостатки-метрик-The-Drawbacks-of-Metrics" class="headerlink" title="Недостатки метрик (The Drawbacks of Metrics)"></a>Недостатки метрик (The Drawbacks of Metrics)</h2><p>Самый большой недостаток как журналов приложений, так и метрик приложений заключается в том, что они имеют системный масштаб, из-за чего трудно понять что-либо, кроме того, что происходит внутри конкретной системы. Конечно, метрики также могут иметь масштаб запроса, но это влечёт за собой сопутствующее увеличение количества меток, что приводит к увеличению объёма хранилища метрик.</p>
+<p>В журналах без сложных объединений одна строка не даёт много информации о том, что произошло с запросом во всех компонентах системы. Хотя можно создать систему, которая сопоставляет метрики и журналы в адресном пространстве или в границах RPC, такие системы требуют, чтобы метрика содержала UID в качестве метки.</p>
+<p>Использование значений с высокой кратностью, таких как UID, в качестве меток метрик может перегружать базы данных временных рядов. Несмотря на то, что новый механизм хранения данных Prometheus был оптимизирован для обработки оттока данных временных рядов, запросы с большим временным диапазоном всё равно будут выполняться медленно. Prometheus — это всего лишь пример. Все популярные существующие решения для баз данных временных рядов страдают от низкой производительности при использовании меток с высокой кратностью.</p>
+<p>При оптимальном использовании журналы и показатели дают нам полное представление о системе, но не более того. Хотя этого может быть достаточно для понимания производительности и поведения отдельных систем, как с сохранением состояния, так и без него, этого недостаточно для понимания жизненного цикла запроса, который проходит через несколько систем.</p>
+<p>Распределённая трассировка — это метод, который позволяет отслеживать выполнение запроса в нескольких системах.</p>
+<h2 id="Отслеживание-Tracing"><a href="#Отслеживание-Tracing" class="headerlink" title="Отслеживание (Tracing)"></a>Отслеживание (Tracing)</h2><p>Трассировка — это представление серии причинно-следственных распределённых событий, которые кодируют сквозной поток запросов в распределённой системе.</p>
+<p>Трассировки — это представление журналов; структура данных трассировок почти такая же, как у журналов событий. Одна трассировка может отображать как путь, пройденный запросом, так и структуру запроса. Путь запроса позволяет разработчикам программного обеспечения и специалистам по обеспечению непрерывности бизнеса понять, какие сервисы участвуют в выполнении запроса, а структура запроса помогает понять, как асинхронность влияет на выполнение запроса.</p>
+<p>Хотя дискуссии о трассировке, как правило, сосредоточены на её полезности в среде микросервисов, справедливо будет предположить, что любое достаточно сложное приложение, которое взаимодействует с такими ресурсами, как сеть, диск или мьютекс, или, скорее, конкурирует за них, может воспользоваться преимуществами трассировки.</p>
+<p>Основная идея трассировки проста: нужно определить конкретные точки (вызовы функций, границы RPC или сегменты параллелизма, такие как потоки, продолжения или очереди) в приложении, прокси-сервере, фреймворке, библиотеке, среде выполнения, промежуточном программном обеспечении и во всём остальном, что находится на пути запроса и представляет собой следующее:</p>
+<ul>
+<li>Разветвления в потоке выполнения (поток операционной системы или зеленый поток) Forks in execution flow (OS thread or a green thread)</li>
+<li>Переход через границы сети или процесса. A hop or a fan out across network or process boundaries</li>
+</ul>
+<p>Трассировки используются для определения объёма работы, выполненной на каждом уровне, с сохранением причинно-следственных связей с помощью семантики «происходит раньше» (happens-before semantics). На рисунке показан поток одного запроса в распределённой системе.<br><img src="/images/sample-request-flow.png" alt="A sample request flow diagram"></p>
+<p>Трассировка этого потока запросов показана на рисунке.<br>Различные компоненты распределенной системы, к которым прикасается запрос в течение жизненного цикла, представлены в виде ориентированного ациклического графа.<br><img src="/images/request_time.png" alt=" The various components of a distributed system touched during the lifecycle of a request, represented as a directed acyclic graph"></p>
+<p> Трассировка — это ориентированный ациклический граф (DAG) промежутков, где рёбра между промежутками называются ссылками.</p>
+<p>Когда начинается выполнение запроса, ему присваивается глобально уникальный идентификатор, который затем распространяется по всему пути запроса, чтобы каждая точка мониторинга могла вставлять или дополнять метаданные перед передачей идентификатора на следующий этап в извилистом потоке запроса. Каждый этап в потоке представлен в виде промежутка. Когда поток выполнения достигает точки мониторинга в одном из этих сервисов, генерируется запись вместе с метаданными. Эти записи обычно асинхронно сохраняются на диске, прежде чем передаваться коллектору, который затем может восстановить ход выполнения на основе различных записей, созданных разными частями системы.<br>Траектория, представленная в виде диапазонов: диапазон A является корневым, диапазон B является дочерним по отношению к диапазону A<br><img src="/images/trace-represented-as-spans.png" alt="A trace represented as spans: span A is the root span, span B is a child of span A"></p>
+<p>Сбор этой информации и восстановление последовательности выполнения с сохранением причинно-следственных связей для ретроспективного анализа и устранения неполадок позволяют лучше понять жизненный цикл запроса.</p>
+<p>Самое главное, что понимание всего жизненного цикла запроса позволяет отлаживать запросы, охватывающие несколько сервисов, чтобы определить источник повышенной задержки или использования ресурсов. Например, рисунок выше показывает, что взаимодействие между сервисом C и сервисом D заняло больше всего времени. Трассировки в значительной степени помогают понять, что и иногда даже почему (например, какой компонент системы задействован в жизненном цикле запроса и замедляет ответ?).</p>
+<p>Существует множество вариантов использования распределённой трассировки. Хотя трассировка в основном применяется для анализа зависимостей между сервисами, распределённого профилирования и отладки проблем в стабильном режиме, она также может помочь с возвратом платежей и планированием ресурсов.</p>
+<p>Zipkin и Jaeger — два самых популярных решения для распределённой трассировки с открытым исходным кодом, совместимые с OpenTracing. (OpenTracing — это нейтральная к поставщику спецификация и библиотеки инструментов для API распределённой трассировки.)</p>
+<h2 id="Проблемы-отслеживания-The-Challenges-of-Tracing"><a href="#Проблемы-отслеживания-The-Challenges-of-Tracing" class="headerlink" title="Проблемы отслеживания (The Challenges of Tracing)"></a>Проблемы отслеживания (The Challenges of Tracing)</h2><p>Отслеживание, безусловно, сложнее всего внедрить в существующую инфраструктуру, потому что для того, чтобы отслеживание было по-настоящему эффективным, необходимо изменить каждый компонент на пути запроса, чтобы он передавал информацию об отслеживании. В зависимости от того, у кого вы спросите, вам либо скажут, что наличие пробелов в потоке запросов не перевешивает их недостатки (поскольку частичное добавление трассировки считается лучше, чем её полное отсутствие, так как частичная трассировка помогает извлечь крупицы знаний из «тумана войны»), либо скажут, что эти пробелы — это слепые зоны, которые усложняют отладку.</p>
+<p>Вторая проблема, связанная с трассировкой, заключается в том, что разработчикам недостаточно просто добавить трассировку в свой код. Большое количество реальных приложений создано с использованием фреймворков или библиотек с открытым исходным кодом, которые могут потребовать дополнительной трассировки. Это становится ещё более сложной задачей в местах с полиглотными архитектурами, поскольку каждый язык, фреймворк и сетевой протокол с сильно различающимися моделями параллелизма и гарантиями должны взаимодействовать друг с другом. Действительно, трассировка наиболее успешно применяется в организациях, которые используют основной набор языков и фреймворков по всей компании.</p>
+<p>Стоимость трассировки не так велика, как стоимость ведения журнала, главным образом потому, что трассировка почти всегда выполняется с большой выборкой, чтобы сократить время выполнения и затраты на хранение. Можно принимать решения о выборке:</p>
+<ul>
+<li><p>В начале запроса, до создания каких- либо трассировок</p>
+</li>
+<li><p>В конце, после того как все участвующие системы зафиксировали следы всего процесса выполнения запроса</p>
+</li>
+<li><p>В середине процесса обработки запроса, когда только последующие сервисы будут сообщать о трассировке</p>
+</li>
+</ul>
+<p>У всех подходов есть свои плюсы и минусы, и можно даже использовать их все.</p>
+<h3 id="Сервисные-сетки-новая-надежда-на-будущее-Service-Meshes-A-New-Hope-for-the-Future"><a href="#Сервисные-сетки-новая-надежда-на-будущее-Service-Meshes-A-New-Hope-for-the-Future" class="headerlink" title="Сервисные сетки: новая надежда на будущее? (Service Meshes: A New Hope for the Future?)"></a>Сервисные сетки: новая надежда на будущее? (Service Meshes: A New Hope for the Future?)</h3><p>Несмотря на то, что внедрение трассировки было затруднительным, появление сервисных сетей практически не требует усилий для интеграции функций трассировки. Платформы данных в сервисных сетях реализуют трассировку и сбор статистики на уровне прокси-серверов, что позволяет рассматривать отдельные сервисы как «чёрные ящики», но при этом получать единообразную и полную информацию о сети в целом. Приложениям, которые являются частью сети, по-прежнему необходимо пересылать заголовки на следующий уровень сети, но дополнительных инструментов не требуется.</p>
+<p>Компания Lyft, как известно, обеспечила поддержку трассировки для всех своих сервисов, внедрив шаблон Service Mesh, и единственным изменением, которое потребовалось на прикладном уровне, была пересылка определённых заголовков. Этот шаблон невероятно полезен для внедрения трассировки в существующие инфраструктуры с минимальным количеством изменений в коде.</p>
+<h2 id="Заключение"><a href="#Заключение" class="headerlink" title="Заключение"></a>Заключение</h2><p>Журналы, показатели и трассировки служат разным целям и дополняют друг друга. В совокупности они обеспечивают максимальную прозрачность поведения распределённых систем. Например, имеет смысл иметь следующее:</p>
+<p>Счетчик и журнал регистрации в каждой основной точке входа и выхода запроса</p>
+<p>Журнал и трассировка в каждой точке принятия решения по запросу</p>
+<p>Также имеет смысл связать все три семантически, чтобы во время отладки можно было:</p>
+<p>Реконструировать кодовый путь, выбранный путем считывания трассировки</p>
+<p>Чтобы вычислить соотношение запросов или ошибок в любой точке пути кода</p>
+<p>Выборка примеров трассировок или событий и сопоставление с метриками открывает возможность переходить по метрикам, просматривать примеры трассировок и изучать поток запросов в различных системах. Такая информация, полученная в результате сочетания различных сигналов наблюдаемости, становится необходимой для отладки распределённых систем.</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://blog.kubernest.com/2024/07/07/observability/the-three-pillars/" data-id="cm3pycyvf0000eowlhd3oghx4" class="article-share-link"><i class="fa fa-share"></i>Поделиться</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "author": {
+            "@type": "Person",
+            "name": "авторы проекта kubernest"
+        },
+        "headline": "Три столпа наблюдаемости",
+        "image": "https://blog.kubernest.com/images/open-telemetry2.png",
+        "keywords": "Оbservability, Logs",
+        "genre": "Оbservability OpenTelemetry",
+        "datePublished": "2024-07-07",
+        "dateCreated": "2024-07-07",
+        "dateModified": "2024-11-20",
+        "url": "https://blog.kubernest.com/2024/07/07/observability/the-three-pillars/",
+        "description": "Краткое содержание статьи• Журналы, метрики и трассировки являются тремя столпами наблюдаемости в системах.• Журналы событий предоставляют информацию о событиях и контекст для детального анализа.• Мет",
+        "wordCount": 3628
+    }
+</script>
+
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="vk_comments"></div>
+    <script type="text/javascript">
+      window.onload = function () {
+      VK.init({apiId: 52539355, onlyWidgets: true});
+      VK.Widgets.Comments("vk_comments", {limit: 20, attach: "*", autoPublish: 1, pageUrl: "https://blog.kubernest.com/2024/07/07/observability/the-three-pillars/"});
+    }
+   </script>
+
+    
+    </section>
+
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>Подписаться:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="vk" href="https://vk.com/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-vk"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="telegram" href="https://t.me/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-telegram"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="youtube" href="https://www.youtube.com/c/KuberNest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-youtube"></i>
+                    </a>
+                </li>
+                
+            
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="twitter" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-twitter"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="facebook" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-facebook"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/atom.xml" target="_blank" rel="noopener">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2024/08/08/observability/open-telemetry-sugar/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">новые</strong>
+        <p class="article-nav-title">
+        
+            Что такое OpenTelemetry и как она может улучшить качество ваших сервисов
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2024/06/02/os/os_scheduler/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">старые</strong>
+        <p class="article-nav-title">Планировщик ОS</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">недавние</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/11/01/observability/tracing/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry-easy1.png)" alt="Трейсинг в Go — это просто, как дважды два" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/11/01/observability/tracing/" class="title">Трейсинг в Go — это просто, как дважды два</a></p>
+                            <p class="item-date"><time datetime="2024-11-01T10:20:00.000Z" itemprop="datePublished">2024-11-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/observability/open-telemetry/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry.png)" alt="OpenTelemetry на практике" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/10/01/observability/open-telemetry/" class="title">OpenTelemetry на практике</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:20:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/kafka/consumer_group/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/Kafka_Internals_Group.png)" alt="Consumer Group Protocol" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Kafka/">Kafka</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></p>
+                            <p class="item-title"><a href="/2024/10/01/kafka/consumer_group/" class="title">Consumer Group Protocol</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/observability/engineering/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/kubernest_pm.png)" alt="Для чего нужен Observability Engineering" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></p>
+                            <p class="item-title"><a href="/2024/10/01/observability/engineering/" class="title">Для чего нужен Observability Engineering</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/08/08/observability/open-telemetry-sugar/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry-sugar1.png)" alt="Что такое OpenTelemetry и как она может улучшить качество ваших сервисов" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/08/08/observability/open-telemetry-sugar/" class="title">Что такое OpenTelemetry и как она может улучшить качество ваших сервисов</a></p>
+                            <p class="item-date"><time datetime="2024-08-08T09:22:00.000Z" itemprop="datePublished">2024-08-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Категории</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">30</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/">Algorithms</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/">GRPC</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">28</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/">Kafka</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Consumer-Group/">Consumer Group</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">архивы</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">ноябрь 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">октябрь 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">август 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">июль 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">июнь 2024</a><span class="archive-list-count">39</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Тэги</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Q-A/" rel="tag">Golang, Q&A</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka-Consumer-Group/" rel="tag">Kafka, Consumer Group</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Logs/" rel="tag">Оbservability, Logs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Observability-Engineering/" rel="tag">Оbservability, Observability Engineering</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-OpenTelemetry/" rel="tag">Оbservability, OpenTelemetry</a><span class="tag-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">Облако тэгов</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Golang-Q-A/" style="font-size: 20px;">Golang, Q&A</a> <a href="/tags/Kafka-Consumer-Group/" style="font-size: 10px;">Kafka, Consumer Group</a> <a href="/tags/%D0%9Ebservability-Logs/" style="font-size: 10px;">Оbservability, Logs</a> <a href="/tags/%D0%9Ebservability-Observability-Engineering/" style="font-size: 10px;">Оbservability, Observability Engineering</a> <a href="/tags/%D0%9Ebservability-OpenTelemetry/" style="font-size: 15px;">Оbservability, OpenTelemetry</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">ссылки</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://vk.com/kubernest">мы в vk</a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://www.youtube.com/c/Kubernest">мы в youtube</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2024 авторы проекта kubernest</p>
+                
+                <p>Powered by <a href="https://designest.ru/" target="_blank">DESIGNest Studio Ltd</a></p>
+                
+            </div>
+            <div class="footer-plugins">
+                
+			<!-- Yandex.RTB R-A-1394392-1 -->
+			<div id="yandex_rtb_R-A-1394392-1"></div>
+			<script>window.yaContextCb.push(()=>{Ya.Context.AdvManager.render({renderTo: 'yandex_rtb_R-A-1394392-1',  blockId: 'R-A-1394392-1' }) })</script>
+                
+              
+    
+
+
+            </div>
+        </div>
+    </div>
+</footer>                                                                                            
+
+    </div>
+    
+    
+    <script type="text/javascript">
+    var vk_shortname = 'true';
+    (function() {
+    var vk = document.createElement('script');
+    vk.type = 'text/javascript';
+    vk.async = true;
+    vk.src = '//vk.com/js/api/openapi.js?169'; 
+    vk.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+    || document.getElementsByTagName('body')[0]).appendChild(vk);
+    })();
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+</body>
+</html>

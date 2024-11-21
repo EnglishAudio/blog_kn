@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    
+
+    
+    <title>Трейсинг в Go — это просто, как дважды два | Kubernest tech blog</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="Оbservability, OpenTelemetry" />
+    
+    <meta name="description" content="OpenTelemetry - стандарт сбора данных о работе приложений, объединяющий OpenTracing и OpenCensus. Стандарт совместим с существующими открытыми и вендорскими стандартами, такими как OpenCensus.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Трейсинг в Go — это просто, как дважды два">
+<meta property="og:url" content="https://blog.kubernest.com/2024/11/01/observability/tracing/index.html">
+<meta property="og:site_name" content="Kubernest tech blog">
+<meta property="og:description" content="OpenTelemetry - стандарт сбора данных о работе приложений, объединяющий OpenTracing и OpenCensus. Стандарт совместим с существующими открытыми и вендорскими стандартами, такими как OpenCensus.">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://blog.kubernest.com/images/open-telemetry-easy1.png">
+<meta property="article:published_time" content="2024-11-01T10:20:00.000Z">
+<meta property="article:modified_time" content="2024-11-21T17:43:00.370Z">
+<meta property="article:author" content="авторы проекта kubernest">
+<meta property="article:tag" content="Оbservability, OpenTelemetry">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.kubernest.com/images/open-telemetry-easy1.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Kubernest tech blog" type="application/atom+xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss-feed.xml" />
+     
+
+     
+        <link rel="amphtml" href="https://blog.kubernest.com/amp2024/11/01/observability/tracing/">
+     
+
+
+    
+        <link rel="icon" href="/css/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+        <link rel="icon" type="image/png" sizes="120x120" href="/apple-touch-icon-120x120.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+    
+
+    
+       <!-- Yandex.RTB -->
+       <script>window.yaContextCb=window.yaContextCb||[]</script>
+       <script src="https://yandex.ru/ads/system/context.js" async></script>
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/3.5.0/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PWEJT515P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4PWEJT515P');
+</script>
+<!-- End Google Analytics -->
+
+    
+    
+        <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(86613025, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<!-- /Yandex.Metrika counter -->
+    
+    
+    
+
+
+</head>
+
+<body>
+         <div id="rec541324929" class="r t-rec" style=" " data-animationappear="off" data-record-type="131">
+            <!-- T123 -->
+            <div class="t123">
+                <div class="t-container_100 ">
+                    <div class="t-width t-width_100 ">
+                        <style>
+                            html, html *, body, body * {
+                                cursor: none;
+                            }
+    
+                            .cursor-dot, .cursor-dot-outline {
+                                mix-blend-mode: normal;
+                                pointer-events: none;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                border-radius: 50%;
+                                opacity: 0;
+                                position: fixed;
+                                -webkit-transform: translate(-50%, -50%);
+                                transform: translate(-50%, -50%);
+                                -webkit-transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                            }
+    
+                            .cursor-dot {
+                                z-index: 99999999;
+                                width: 8px;
+                                height: 8px;
+                                background-color: rgba(0, 195, 255, 0.72);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #016ffe;
+                            }
+    
+                            .cursor-dot-outline {
+                                z-index: 99999998;
+                                width: 36px;
+                                height: 36px;
+                                background-color: rgb(0, 162, 255);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #000;
+                                filter: blur(18px);
+                            }
+                        </style>
+                        <script>
+    
+                            $("body").prepend('<div class="cursor-dot-outline"></div>');
+                            $("body").prepend('<div class="cursor-dot"></div>');
+    
+                            var cursor = {
+                                delay: 8,
+                                _x: 0,
+                                _y: 0,
+                                endX: (window.innerWidth / 2),
+                                endY: (window.innerHeight / 2),
+                                cursorVisible: true,
+                                cursorEnlarged: false,
+                                $dot: document.querySelector('.cursor-dot'),
+                                $outline: document.querySelector('.cursor-dot-outline'),
+    
+                                init: function() {
+                                    this.dotSize = this.$dot.offsetWidth;
+                                    this.outlineSize = this.$outline.offsetWidth;
+    
+                                    this.setupEventListeners();
+                                    this.animateDotOutline();
+                                },
+    
+                                setupEventListeners: function() {
+                                    var self = this;
+    
+                                    document.querySelectorAll('a').forEach(function(el) {
+                                        el.addEventListener('mouseover', function() {
+                                            self.cursorEnlarged = true;
+                                            self.toggleCursorSize();
+                                        });
+                                        el.addEventListener('mouseout', function() {
+                                            self.cursorEnlarged = false;
+                                            self.toggleCursorSize();
+                                        });
+                                    });
+    
+                                    document.addEventListener('mousedown', function() {
+                                        self.cursorEnlarged = true;
+                                        self.toggleCursorSize();
+                                    });
+                                    document.addEventListener('mouseup', function() {
+                                        self.cursorEnlarged = false;
+                                        self.toggleCursorSize();
+                                    });
+    
+                                    document.addEventListener('mousemove', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+    
+                                        self.endX = e.clientX;
+                                        self.endY = e.clientY;
+                                        self.$dot.style.top = self.endY + 'px';
+                                        self.$dot.style.left = self.endX + 'px';
+                                    });
+    
+                                    document.addEventListener('mouseenter', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    });
+    
+                                    document.addEventListener('mouseleave', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    });
+                                },
+    
+                                animateDotOutline: function() {
+                                    var self = this;
+    
+                                    self._x += (self.endX - self._x) / self.delay;
+                                    self._y += (self.endY - self._y) / self.delay;
+                                    self.$outline.style.top = self._y + 'px';
+                                    self.$outline.style.left = self._x + 'px';
+    
+                                    requestAnimationFrame(this.animateDotOutline.bind(self));
+                                },
+    
+                                toggleCursorSize: function() {
+                                    var self = this;
+    
+                                    if (self.cursorEnlarged) {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(4)';
+                                        self.$outline.style.transform = "translate(-50%, -50%) scale(0.00)";
+                                    } else {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(1)';
+                                        self.$outline.style.transform = 'translate(-50%, -50%) scale(1)';
+                                    }
+                                },
+    
+                                toggleCursorVisibility: function() {
+                                    var self = this;
+    
+                                    if (self.cursorVisible) {
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    } else {
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    }
+                                }
+                            }
+                            cursor.init();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">                                                                                                                                                          
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo">
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">Главная</a>
+                                </li>
+                            
+                                    <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/">Golang</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/Algorithms/">Algorithms</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/GRPC/">GRPC</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/">Kafka</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a></li></ul></li></ul>
+                                
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" target="_blank" rel="noopener" href="https://kubernest.com/index.html">О сайте</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+<div class="ya-site-form ya-site-form_inited_no" data-bem="{&quot;action&quot;:&quot;/search.html&quot;,&quot;arrow&quot;:false,&quot;bg&quot;:&quot;transparent&quot;,&quot;fontsize&quot;:12,&quot;fg&quot;:&quot;#000000&quot;,&quot;language&quot;:&quot;ru&quot;,&quot;logo&quot;:&quot;rb&quot;,&quot;publicname&quot;:&quot;����� �� ����� GoXpert&quot;,&quot;suggest&quot;:true,&quot;target&quot;:&quot;_blank&quot;,&quot;tld&quot;:&quot;ru&quot;,&quot;type&quot;:2,&quot;usebigdictionary&quot;:true,&quot;searchid&quot;:2519671,&quot;input_fg&quot;:&quot;#000000&quot;,&quot;input_bg&quot;:&quot;#ffffff&quot;,&quot;input_fontStyle&quot;:&quot;normal&quot;,&quot;input_fontWeight&quot;:&quot;normal&quot;,&quot;input_placeholder&quot;:&quot;&quot;,&quot;input_placeholderColor&quot;:&quot;#000000&quot;,&quot;input_borderColor&quot;:&quot;#7f9db9&quot;}">
+<form action="https://yandex.ru/search/site/" method="get" target="_blank" accept-charset="utf-8">
+<input type="hidden" name="searchid" value="2519671"/>
+<input type="hidden" name="l10n" value="ru"/>
+<input type="hidden" name="reqenc" value=""/>
+<input type="search" name="text" value=""/>
+<input type="submit" value="�����"/>
+</form>
+</div>
+    <style type="text/css">.ya-page_js_yes .ya-site-form_inited_no { display: none; }
+</style>
+<script type="text/javascript">
+(function(w,d,c){var s=d.createElement('script'),h=d.getElementsByTagName('script')[0],e=d.documentElement;
+if((' '+e.className+' ').indexOf(' ya-page_js_yes ')===-1)
+{e.className+=' ya-page_js_yes';}s.type='text/javascript';
+s.async=true;s.charset='utf-8';
+s.src=(d.location.protocol==='https:'?'https:':'http:')+'//site.yandex.net/v2.0/js/all.js';
+h.parentNode.insertBefore(s,h);(w[c]||(w[c]=[])).push(function(){
+
+Ya.Site.Form.init()
+
+})})(window,document,'yandex_site_callbacks');</script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a>
+    </h1>
+</div>
+
+                        <div class="main-body-content">
+                            <article id="post-observability/tracing" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Трейсинг в Go — это просто, как дважды два
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+  <div class="article-date">
+    <i class="fa fa-calendar"></i>
+    <a href="/2024/11/01/observability/tracing/" class="article-date">
+       <time datetime="2024-11-01T10:20:00.000Z" itemprop="datePublished">2024-11-01</time>
+    </a>
+  </div>
+
+
+<div class="article-date">
+  <i class="fa fa-calendar-plus-o"></i>
+  <a href="/2024/11/01/observability/tracing/" class="article-date">
+     <time datetime="2024-11-21T17:43:00.370Z" itemprop="dateModified">2024-11-21</time>
+  </a>
+</div>
+
+
+                
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%D0%9Ebservability-OpenTelemetry/" rel="tag">Оbservability, OpenTelemetry</a>
+    </div>
+
+                
+
+                
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+
+            
+
+            
+
+            <!-- feed_rem_st --><!-- feed_rem_end --><h2 id="Краткое-содержание-статьи"><a href="#Краткое-содержание-статьи" class="headerlink" title="Краткое содержание статьи"></a>Краткое содержание статьи</h2><p>• В эпоху быстрорастущих сервисов важно контролировать состояние системы.<br>• Логи и метрики помогают следить за различными параметрами, такими как запросы в секунду, потребление памяти и т.д.<br>• Наблюдаемость позволяет легко устранять баги и решать проблемы.<br>• OpenTelemetry - стандарт сбора данных о работе приложений.<br>• Пролет - единица работы (выполнения) операции, содержит имя, данные о времени, структурированные сообщения и метаданные.<br>• Jaeger(Егерь) - инструмент для анализа данных о работе приложений.<br>• OpenTelemetry состоит из идей уже существующих реализаций, таких как OpenTracing и OpenCensus.<br>• Основная задача - предоставить набор стандартизированных SDK, API и интерфейсов для подготовки и отправки данных в серверную часть для мониторинга системой.</p>
+<h2 id="Начнем"><a href="#Начнем" class="headerlink" title="Начнем"></a>Начнем</h2><p>Добрый день! Меня зовут <a target="_blank" rel="noopener" href="http://kubernest.com/dmitry-sigaev/">Дмитрий Сигаев</a> и здесь в этом блоге я делюсь своим опытом в разработки высоконагруженных приложений и систем.<br>Сегодня мы поговорим об OpenTelemetry в Golang-проектах, которые используют микросервисную архитектуру и поговорим, как настроить трейсинг и мониторинг и подружить его с уже существующей в проекте инфраструктурой.</p>
+<p>В эпоху быстрорастущих сервисов важно иметь возможность контролировать состояние системы в любой момент времени. Одними из инструментов для достижения этого являются логи и метрики, которые помогают нам следить за многими параметрами, такими как количество запросов в секунду (RPS), потребление памяти, процент закешированных вызовов и так далее. Иными словами, логи и метрики добавляют нашей системе такую важную характеристику, как наблюдаемость (Observability)</p>
+<p>Наблюдаемость позволяет нам легко устранять баги и решать новые проблемы, отвечая на вопрос “Почему это происходит?”.</p>
+<p>Представим, что спустя месяцы работы среднее время ответа сервиса увеличилось в 2 раза, о чем мы узнали по метрикам. Сходу можно предположить, что проблема на стороне базы данных, но в сложных проектах с большим количеством интегрированных технологий причина перестает быть настолько явной. Что, если начали тормозить несколько частей нашего сервиса? В таких ситуациях общее время выполнения запроса не указывает нам ни проблемное место, ни сторону, куда нужно копать. На помощь нам приходит ещё один инструмент под названием трейсинг (tracing).</p>
+<p>В этой статье я расскажу об основах интеграции трейсинга в приложения, написанные на языке Go c помощью инструментария OpenTelemetry и Jaeger. Большая часть взята из официальных документаций, поэтому вы всегда сможете подробнее изучить эту тему.</p>
+<h2 id="OpenTelemetry"><a href="#OpenTelemetry" class="headerlink" title="OpenTelemetry"></a>OpenTelemetry</h2><p><a target="_blank" rel="noopener" href="https://opentelemetry.io/">OpenTelemetry</a> (OTel) - стандарт сбора данных о работе приложений, который состоит из идей уже существующих реализаций, таких как OpenCensus и OpenTracing. Основная задача - предоставить набор стандартизированных SDK, API и инструментов для подготовки и отправки данных в сервисы (observability back-end) для мониторинга систем. об <a href="/2024/10/01/observability/engineering/" title="Observability читаем здесь">Observability читаем здесь</a></p>
+<p>В OTel входят библиотеки для многих популярных языков (C++, Java, Python, .NET, PHP, Rust полный список), а также готовые инстументы от сообщества для трейсинга популярных библиотек и фреймворков. Прежде чем начать писать код, предлагаю ознакомиться с главными компонентами в OpenTelemetry, которые мы будем использовать в будущем. Первым важным компонентом OpenTelemetry является span.<br>OpenTelemetry – стандарт, который появился относительно недавно: в конце 2020 года. При этом он получил широкое распространение и поддержку множества вендоров ПО для трейсинга и мониторинга.</p>
+<h2 id="Span"><a href="#Span" class="headerlink" title="Span"></a>Span</h2><p>Span представляет собой единицу работы (выполнения) какой-то операции. Он отслеживает конкретные события (events), которые выполняет запрос, рисуя картину того, что произошло за время, в течение которого эта операция была выполнена. Он содержит имя, данные о времени, структурированные сообщения и другие метаданные (атрибуты) для предоставления информации об отслеживаемой операции.</p>
+<p>Пример информации, которую содержит span http запроса:</p>
+<p><img src="/images/open-telemetry-easy1.png" alt="Kubernest: Метаданные содержат информацию о запросе, процессе + название и версию библиотеки"></p>
+<p>Они делятся на два типа: Parent (root) span и Child span. Дочерние спаны создаются при вложенных вызовах функции, которые наследуются от ранее созданного родительского. В реализации для языка Go их передают через context.Context.</p>
+<p>Правило простое: если в переданном контексте уже есть спан, то создаем дочерний от него. В противном же случае создаем родительский (root) span.</p>
+<p>Каждый span имеет span_id и trace_id. Важно знать, что от начала создания родительского и до конца дочерних спанов trace_id не меняется, в то время как span_id для каждого спана уникален. Такие свойства позволяют объединить вложенности и ветвления нескольких вызовов:</p>
+<p><img src="/images/open-telemetry-easy2.png" alt="Kubernest: Trace vs Span"></p>
+<p>Например, в микросервисной архитектуре мы можем передавать trace_id между сервисами, чтобы в конце получить полное дерево вызовов. Аналогично, отправляя одинаковый идентификатор с клиента, можно получить данные о всех его вызовах для аналитики (и не только).</p>
+<p><img src="/images/open-telemetry-easy3.png" alt="Пример трассировки запросов клиента с одним trace_id"></p>
+<p>Статус может иметь один из двух статусов: Error и Ok . Как можно понять из названия, статус Error сигнализирует о том, что во время выполнения операций произошла ошибка, а Ok наоборот - все операции выполнились успешно</p>
+<h2 id="Jaeger"><a href="#Jaeger" class="headerlink" title="Jaeger"></a>Jaeger</h2><p>Ранее говорилось, что OpenTelemetry только готовит (не хранит!) и отправляет данные в observability back-end. Одним из примеров такого бэкенда является Jaeger.</p>
+<p>На момент написания статьи последней версией была 1.63.0. Подробнее об установке можно узнать в <a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.63/getting-started/">документации</a></p>
+<h3 id="Установка"><a href="#Установка" class="headerlink" title="Установка"></a>Установка</h3><p>Docker </p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> --rm --name jaeger \</span></span><br><span class="line"><span class="bash">  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \</span></span><br><span class="line"><span class="bash">  -p 16686:16686 \</span></span><br><span class="line"><span class="bash">  -p 4317:4317 \</span></span><br><span class="line"><span class="bash">  -p 4318:4318 \</span></span><br><span class="line"><span class="bash">  -p 14250:14250 \</span></span><br><span class="line"><span class="bash">  -p 14268:14268 \</span></span><br><span class="line"><span class="bash">  -p 14269:14269 \</span></span><br><span class="line"><span class="bash">  -p 9411:9411 \</span></span><br><span class="line"><span class="bash">  jaegertracing/all-in-one:1.63.0</span></span><br></pre></td></tr></table></figure>
+<p>Docker-compose</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">version: &#x27;3.8&#x27;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line">  jaeger:</span><br><span class="line">    image: jaegertracing/all-in-one</span><br><span class="line">    ports:</span><br><span class="line">      - &quot;14268:14268&quot;</span><br><span class="line">      - &quot;16686:16686&quot;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>Локальная установка: Скачать и запустить готовый бинарник <a target="_blank" rel="noopener" href="https://www.jaegertracing.io/download/">https://www.jaegertracing.io/download/</a></p>
+<p>При открытии <a target="_blank" rel="noopener" href="http://localhost:16686/">http://localhost:16686</a>  вы должны увидеть такую картину:<br><img src="/images/open-telemetry-easy4.png" alt="Kubernest: Jaeger"></p>
+<h2 id="Пишем-приложение"><a href="#Пишем-приложение" class="headerlink" title="Пишем приложение"></a>Пишем приложение</h2><p>Для примера я написал маленький сервис, который сохранят и отдает заметки из Redis.</p>
+<p>Структура:<br>‘’’shell<br>├── storage<br>│   └── redis.go<br>├── server<br>│   └── http.go<br>├── models<br>│   └── note.go<br>├── main.go<br>├── go.sum<br>├── go.mod<br>├── docker-compose.yaml<br>└── cmd<br>    └── main.go</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">models/note.go</span><br><span class="line"></span><br><span class="line">```go</span><br><span class="line">package models</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;errors&quot;</span><br><span class="line">	&quot;time&quot;</span><br><span class="line">)</span><br><span class="line">import &quot;github.com/google/uuid&quot;</span><br><span class="line"></span><br><span class="line">var ErrNotFound = errors.New(&quot;note not found&quot;)</span><br><span class="line"></span><br><span class="line">type Note struct &#123;</span><br><span class="line">	NoteID  uuid.UUID `json:&quot;note_id&quot;`</span><br><span class="line">	Title   string    `json:&quot;title&quot;`</span><br><span class="line">	Content string    `json:&quot;content&quot;`</span><br><span class="line">	Created time.Time `json:&quot;created&quot;`</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>storage/redis.go</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> storage</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/go-redis/redis/v9&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/google/uuid&quot;</span></span><br><span class="line">	<span class="string">&quot;trace-example/models&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> NotesStorage <span class="keyword">struct</span> &#123;</span><br><span class="line">	client redis.UniversalClient</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewNotesStorage</span><span class="params">(client redis.UniversalClient)</span> <span class="title">NotesStorage</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> NotesStorage&#123;client: client&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s NotesStorage)</span> <span class="title">Store</span><span class="params">(ctx context.Context, note models.Note)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	data, err := json.Marshal(note)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;marshal note: %w&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err = s.client.Set(ctx, note.NoteID.String(), data, <span class="number">-1</span>).Err(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;redis set: %w&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s NotesStorage)</span> <span class="title">Get</span><span class="params">(ctx context.Context, noteID uuid.UUID)</span> <span class="params">(*models.Note, error)</span></span> &#123;</span><br><span class="line">	data, err := s.client.Get(ctx, noteID.String()).Bytes()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> err == redis.Nil &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, models.ErrNotFound</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;redis get: %w&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> note models.Note</span><br><span class="line">	<span class="keyword">if</span> err = json.Unmarshal(data, &amp;note); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;unmarshal note: %w&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;note, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>server/http.go</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> server</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;errors&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/gofiber/fiber/v2&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/google/uuid&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">	<span class="string">&quot;trace-example/models&quot;</span></span><br><span class="line">	<span class="string">&quot;trace-example/storage&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> FiberHandler <span class="keyword">struct</span> &#123;</span><br><span class="line">	notesStorage storage.NotesStorage</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFiberHandler</span><span class="params">(notesStorage storage.NotesStorage)</span> <span class="title">FiberHandler</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> FiberHandler&#123;notesStorage: notesStorage&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h FiberHandler)</span> <span class="title">CreateNote</span><span class="params">(fiberctx *fiber.Ctx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	input := <span class="keyword">struct</span> &#123;</span><br><span class="line">		Title   <span class="keyword">string</span> <span class="string">`json:&quot;title&quot;`</span></span><br><span class="line">		Content <span class="keyword">string</span> <span class="string">`json:&quot;content&quot;`</span></span><br><span class="line">	&#125;&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := fiberctx.BodyParser(&amp;input); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	noteID := uuid.New()</span><br><span class="line">	err := h.notesStorage.Store(fiberctx.UserContext(), models.Note&#123;</span><br><span class="line">		NoteID:  noteID,</span><br><span class="line">		Title:   input.Title,</span><br><span class="line">		Content: input.Content,</span><br><span class="line">		Created: time.Now(),</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fiber.NewError(fiber.StatusInternalServerError, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> fiberctx.JSON(<span class="keyword">map</span>[<span class="keyword">string</span>]any&#123;</span><br><span class="line">		<span class="string">&quot;note_id&quot;</span>: noteID,</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h FiberHandler)</span> <span class="title">GetNote</span><span class="params">(fiberctx *fiber.Ctx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	noteID, err := uuid.Parse(fiberctx.Query(<span class="string">&quot;note_id&quot;</span>))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fiber.NewError(fiber.StatusBadRequest, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	note, err := h.notesStorage.Get(fiberctx.UserContext(), noteID)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> errors.Is(err, models.ErrNotFound) &#123;</span><br><span class="line">			<span class="keyword">return</span> fiber.NewError(fiber.StatusNotFound, err.Error())</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> fiber.NewError(fiber.StatusInternalServerError, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> fiberctx.JSON(note)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>cmd/main.go</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/go-redis/redis/v9&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/gofiber/fiber/v2&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;trace-example/server&quot;</span></span><br><span class="line">	<span class="string">&quot;trace-example/storage&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	app := fiber.New()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Подключаемся к Redis</span></span><br><span class="line">	client := redis.NewClient(&amp;redis.Options&#123;</span><br><span class="line">		Addr: <span class="string">&quot;localhost:6379&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err := client.Ping(context.TODO()).Err(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(<span class="string">&quot;create redis client&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Настраиваем роутер</span></span><br><span class="line">	handler := server.NewFiberHandler(storage.NewNotesStorage(client))</span><br><span class="line">	app.Post(<span class="string">&quot;/create&quot;</span>, handler.CreateNote)</span><br><span class="line">	app.Get(<span class="string">&quot;/get&quot;</span>, handler.GetNote)</span><br><span class="line"></span><br><span class="line">	log.Fatal(app.Listen(<span class="string">&quot;:8080&quot;</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>docker-compose.yaml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">version: &#x27;3.8&#x27;</span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line"></span><br><span class="line">  jaeger:</span><br><span class="line">    image: jaegertracing/all-in-one</span><br><span class="line">    ports:</span><br><span class="line">      - &quot;14268:14268&quot;</span><br><span class="line">      - &quot;16686:16686&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  redis:</span><br><span class="line">    restart: on-failure</span><br><span class="line"></span><br><span class="line">    image: &quot;redis:latest&quot;</span><br><span class="line"></span><br><span class="line">    command: redis-server --port 6380</span><br><span class="line"></span><br><span class="line">    ports:</span><br><span class="line">      - &quot;6379:6379&quot;</span><br><span class="line"></span><br><span class="line">    environment:</span><br><span class="line">      REDIS_REPLICATION_MODE: master</span><br><span class="line"></span><br><span class="line">    volumes:</span><br><span class="line">      - redis-data:/var/lib/redis</span><br><span class="line"></span><br><span class="line">volumes:</span><br><span class="line">  redis-data:</span><br></pre></td></tr></table></figure>
+
+<p>Поднимаем контейнеры с Redis и Jaeger</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>И запускаем наш сервис</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run cmd/main.go</span><br></pre></td></tr></table></figure>
+
+<p>После старта можем добавить заметку:</p>
+<p><img src="/images/open-telemetry-easy5.png" alt="kubernest: postman"></p>
+<p>curl запросы<br>Добавление заметки</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request POST <span class="string">&#x27;localhost:8080/create&#x27;</span> \</span><br><span class="line">--header <span class="string">&#x27;Content-Type: application/json&#x27;</span> \</span><br><span class="line">--data-raw <span class="string">&#x27;&#123;</span></span><br><span class="line"><span class="string">    &quot;title&quot;:&quot;Something interesting&quot;,</span></span><br><span class="line"><span class="string">    &quot;content&quot;: &quot;Lorem ipsum...&quot;</span></span><br><span class="line"><span class="string">&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>Получение заметки</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request GET <span class="string">&#x27;localhost:8080/get?note_id=7411ff79-fd1d-46ab-b9f8-21105cd770ce&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>Начнем интеграцию OpenTelemetry с создания экспортера (exporter) , который отправляет (экспортирует) данные в observability back-end и имеет простой интефейс</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> SpanExporter <span class="keyword">interface</span> &#123;</span><br><span class="line">    ExportSpans(ctx context.Context, spans []ReadOnlySpan) error</span><br><span class="line">    Shutdown(ctx context.Context) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Здесь мы видим ещё один вид спанов - ReadOnlySpan. Это не отдельный тип, а просто интефейс только для получения информации о спане.</p>
+<p>Теперь создадим exporter для Jaeger:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> tracer</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel/exporters/jaeger&quot;</span></span><br><span class="line">	tracesdk <span class="string">&quot;go.opentelemetry.io/otel/sdk/trace&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewJaegerExporter creates new jaeger exporter</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//	url example - http://localhost:14268/api/traces</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewJaegerExporter</span><span class="params">(url <span class="keyword">string</span>)</span> <span class="params">(tracesdk.SpanExporter, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Теперь создадим провайдера (provider), который будет создавать трейсеры (tracers)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> tracer</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel/exporters/jaeger&quot;</span></span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel/sdk/resource&quot;</span></span><br><span class="line">	tracesdk <span class="string">&quot;go.opentelemetry.io/otel/sdk/trace&quot;</span></span><br><span class="line">	semconv <span class="string">&quot;go.opentelemetry.io/otel/semconv/v1.12.0&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTraceProvider</span><span class="params">(exp tracesdk.SpanExporter, ServiceName <span class="keyword">string</span>)</span> <span class="params">(*tracesdk.TracerProvider, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// Ensure default SDK resources and the required service name are set.</span></span><br><span class="line">	r, err := resource.Merge(</span><br><span class="line">		resource.Default(),</span><br><span class="line">		resource.NewWithAttributes(</span><br><span class="line">			semconv.SchemaURL,</span><br><span class="line">			semconv.ServiceNameKey.String(ServiceName),</span><br><span class="line">		),</span><br><span class="line">	)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> tracesdk.NewTracerProvider(</span><br><span class="line">		tracesdk.WithBatcher(exp),</span><br><span class="line">		tracesdk.WithResource(r),</span><br><span class="line">	), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Разберем код:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> tracesdk.NewTracerProvider(</span><br><span class="line">		tracesdk.WithBatcher(exp),</span><br><span class="line">		tracesdk.WithResource(r),</span><br><span class="line">), <span class="literal">nil</span></span><br></pre></td></tr></table></figure>
+
+<p>При создании провайдера мы добавляем опции:</p>
+<ul>
+<li><em>WithBatcher</em> - отправляет данные экспортеру пачками, повышая производительность</li>
+<li><em>WithResourse</em> - добавляет в каждый трейс данные (ресурсы)</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">resource.Merge(</span><br><span class="line">	resource.Default(),</span><br><span class="line">	resource.NewWithAttributes(</span><br><span class="line">		semconv.SchemaURL,</span><br><span class="line">		semconv.ServiceNameKey.String(ServiceName),</span><br><span class="line">	),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>resource.Merge объединяет несколько ресурсов. Вместе со стандартными мы добавляем версию библиотеки и название сервиса, чтобы добавить возможность фильтровать трейсы каждого сервиса.</p>
+<p>Теперь осталось всего лишь создать трейсер:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> tracer</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel&quot;</span></span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel/exporters/jaeger&quot;</span></span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel/sdk/resource&quot;</span></span><br><span class="line">	tracesdk <span class="string">&quot;go.opentelemetry.io/otel/sdk/trace&quot;</span></span><br><span class="line">	semconv <span class="string">&quot;go.opentelemetry.io/otel/semconv/v1.12.0&quot;</span></span><br><span class="line">	<span class="string">&quot;go.opentelemetry.io/otel/trace&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InitTracer</span><span class="params">(jaegerURL <span class="keyword">string</span>, serviceName <span class="keyword">string</span>)</span> <span class="params">(trace.Tracer, error)</span></span> &#123;</span><br><span class="line">	exporter, err := NewJaegerExporter(jaegerURL)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;initialize exporter: %w&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	tp, err := NewTraceProvider(exporter, serviceName)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;initialize provider: %w&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	otel.SetTracerProvider(tp) <span class="comment">// !!!!!!!!!!!</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> tp.Tracer(<span class="string">&quot;main tracer&quot;</span>), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>otel.SetTracerProvider(tp) - очень важная строка. Она задает глобальный провайдер, чтобы другие библиотеки с инструментарием могли начинать свои трейсы</p>
+<p>Добавим в main.go вызов InitTracer :</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">tracer, err := trace.InitTracer(<span class="string">&quot;http://localhost:14268/api/traces&quot;</span>, <span class="string">&quot;Note Service&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">	log.Fatal(<span class="string">&quot;init tracer&quot;</span>, err)</span><br><span class="line">&#125;</span><br><span class="line">........</span><br></pre></td></tr></table></figure>
+
+<p>Ищем готовый инстументарий:<br>Перед тем, как писать свой велосипед, попробуй найти готовый в интернете</p>
+<p>Всего можно выделить три способа поиска готового инструментария</p>
+<p>Посмотреть в <a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation">https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation</a></p>
+<p>Найти в репозитории нужной библиотеки пакет otelXxx (Xxx - название библиотеки)</p>
+<p>Загуглить :) golang название_библиотеки OpenTelemetry<br>Например, давайте найдем инструментарий для github.com/gofiber/fiber:</p>
+<p><img src="/images/open-telemetry-easy6.png" alt="kubernest: search"><br><img src="/images/open-telemetry-easy7.png" alt="kubernest: answer"></p>
+<p>Видим, что сторонний репозиторий заархивирован, но его код был добавлен в <a target="_blank" rel="noopener" href="https://github.com/gofiber/contrib/tree/main/otelfiber">официальный</a></p>
+<p>Многие библиотеки не имеют readme.md файла, поэтому всегда лучше смотреть в <a target="_blank" rel="noopener" href="https://github.com/gofiber/contrib/tree/main/otelfiber/example">папку example</a>. Находим строку app.Use(otelfiber.Middleware(“my-server”)) . Добавим её в наш код!</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/gofiber/contrib/otelfiber&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    _, err := trace.InitTracer(<span class="string">&quot;http://localhost:14268/api/traces&quot;</span>, <span class="string">&quot;Note Service&quot;</span>)</span><br><span class="line">    .......</span><br><span class="line">	app := fiber.New()</span><br><span class="line">	app.Use(otelfiber.Middleware(<span class="string">&quot;my-server&quot;</span>)) <span class="comment">// &lt;-------</span></span><br><span class="line">    .......</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>После перезапуска выполним несколько запросов и вернемся в Jaeger:<br><img src="/images/open-telemetry-easy8.png" alt="kubernest: Jaeger"></p>
+<p>После нажатия на Find Traces увидим список наших трейсов:</p>
+<p><img src="/images/open-telemetry-easy9.png" alt="kubernest: Jaeger"></p>
+<p>Для перехода в нужный нам трейс достаточно нажать на его название.</p>
+<p><img src="/images/open-telemetry-easy10.png" alt="kubernest: Jaeger"></p>
+<h2 id="Как-это-работает"><a href="#Как-это-работает" class="headerlink" title="Как это работает?"></a>Как это работает?</h2><p>Ранее мы создали мидлварь для фреймворка fiber, который перехватывает входящий запрос, создает родительский спан и передает его в контексе. Заметьте, что без строки otel.SetTracerProvider этот трейс нигде не будет записываться.</p>
+<p>В метаданные спана он включил данные запроса и ответа, которые могут оказаться важными при исправлении проблем.</p>
+<p>Теперь добавим трассировку для редиса: с помощью второго метода поиска узнаем, что нужный пакет уже лежит в репозитории go-redis - <a target="_blank" rel="noopener" href="https://github.com/go-redis/redis/tree/master/extra/redisotel">https://github.com/go-redis/redis/tree/master/extra/redisotel</a>. Добавим его в код:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/go-redis/redis/extra/redisotel/v9&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    .........</span><br><span class="line">	<span class="comment">// Подключаемся к Redis</span></span><br><span class="line">	client := redis.NewClient(&amp;redis.Options&#123;</span><br><span class="line">		Addr: <span class="string">&quot;localhost:6379&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err := client.Ping(context.TODO()).Err(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(<span class="string">&quot;create redis client&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> err := redisotel.InstrumentTracing(client); err != <span class="literal">nil</span> &#123; <span class="comment">// &lt;------</span></span><br><span class="line">		log.Fatal(<span class="string">&quot;enable instrument tracing&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">    .........</span><br></pre></td></tr></table></figure>
+
+<p>Выполним ещё раз запросы и посмотрим на трейсы. Не забудьте нажать кнопку Find Traces ещё раз (или перезагрузить страницу)</p>
+<p><img src="/images/open-telemetry-easy11.png" alt="kubernest: Jaeger"></p>
+<p>Теперь мы видим не только данные фибера, но и запросы в бд!</p>
+<h2 id="Как-это-работает-1"><a href="#Как-это-работает-1" class="headerlink" title="Как это работает?"></a>Как это работает?</h2><p>redisotel добавляет хук для нашего клиента, чтобы при вызове любой операции создавать ещё один спан с нужными данными.</p>
+<p>В нашем примере мы рассмотрели только две библиотеки, но вы можете найти несколько сотен для популярных библиотек. Примеры:</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/google.golang.org/grpc/otelgrpc">otelgrpc</a> - унарный interceptor для запросов gRPC</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo">otelmongo</a> - трейсер для клиента mongodb</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/net/http/otelhttp">otelhttp</a> - middleware для net/http</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/Shopify/sarama/otelsarama">otelsarama</a> - трейсер для sarama, популярного клиента kafka</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/gofiber/contrib/otelfiber">otelfiber</a>, <a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/gin-gonic/gin/otelgin">otelgin</a>, <a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/astaxie/beego/otelbeego">otelbeego</a>, <a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/labstack/echo/otelecho">otelecho</a> - мидлвари для веб-фреймворков</p>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/bradfitz/gomemcache/memcache/otelmemcache">otelmemcached</a> - трейсер для клиента memcached</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/go-kit/kit/otelkit">otelkit</a> - трейсер для микросервисного фреймворка kit</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/gocql/gocql/otelgocql">otelgocql</a> - трейсер для клиента Cassandra</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/exaring/otelpgx">otelpgx</a> - трейсер для клиента PostresSQL pgx (и pgxpool)</p>
+<p>И много других!</p>
+<hr>
+<h2 id="Ручной-трейсинг"><a href="#Ручной-трейсинг" class="headerlink" title="Ручной трейсинг"></a>Ручной трейсинг</h2><p>Казалось бы, что с таким инструментарием мы уже на порядок повышаем observability нашего сервиса. Но часто возникают ситуации, когда нужно создать свои спаны с более подробной информацией. Взглянем на интерфейс трейсера:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> Tracer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Start(ctx context.Context, spanName <span class="keyword">string</span>, opts ...SpanStartOption) (context.Context, Span)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Добавим его в структуру FiberHandlers</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> FiberHandler <span class="keyword">struct</span> &#123;</span><br><span class="line">	notesStorage storage.NotesStorage</span><br><span class="line">	tracer       trace.Tracer <span class="comment">// &lt;-------</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFiberHandler</span><span class="params">(notesStorage storage.NotesStorage, tracer trace.Tracer)</span> <span class="title">FiberHandler</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> FiberHandler&#123;notesStorage: notesStorage, tracer: tracer&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Теперь создадим свой спан:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ctx, span := h.tracer.Start(fiberctx.UserContext(), <span class="string">&quot;GetNote&quot;</span>)</span><br><span class="line"><span class="keyword">defer</span> span.End()</span><br><span class="line">....</span><br><span class="line">note, err := h.notesStorage.Get(ctx, noteID)</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<p>Важные моменты:</p>
+<ul>
+<li>Во всех последующих функциях нужно передавать контекст, полученный из tracer.Start</li>
+<li>defer span.End() завершает спан. Время выполнения спана = время вызова span.End() - время вызова tracer.Start()</li>
+</ul>
+<p>Для добавление своей информации в спан нужно воспользоваться функцией trace.WithAttributes()</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ctx, span := h.tracer.Start(fiberctx.UserContext(), <span class="string">&quot;GetNote&quot;</span>, trace.WithAttributes(</span><br><span class="line">	attribute.String(<span class="string">&quot;MyKey&quot;</span>, <span class="string">&quot;MyValue&quot;</span>)),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>Теперь посмотрим на новый трейс:</p>
+<p><img src="/images/open-telemetry-easy12.png" alt="kubernest: Jaeger"></p>
+<h2 id="События-events"><a href="#События-events" class="headerlink" title="События (events):"></a>События (events):</h2><p>Зачастую наши функции делают несколько вызовов других. Для измерения времени каждой есть возможность разделить спан на события с помощью span.AddEvent(). В параметрах можно также задать атрибуты:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h FiberHandler)</span> <span class="title">GetNote</span><span class="params">(fiberctx *fiber.Ctx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	ctx, span := h.tracer.Start(fiberctx.UserContext(), <span class="string">&quot;GetNote&quot;</span>)</span><br><span class="line">	<span class="keyword">defer</span> span.End()</span><br><span class="line"></span><br><span class="line">	span.AddEvent(<span class="string">&quot;parse note_id&quot;</span>) <span class="comment">// &lt;------</span></span><br><span class="line">	noteID, err := uuid.Parse(fiberctx.Query(<span class="string">&quot;note_id&quot;</span>))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fiber.NewError(fiber.StatusBadRequest, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	span.AddEvent(<span class="string">&quot;call redis storage&quot;</span>, trace.WithAttributes( <span class="comment">// &lt;----</span></span><br><span class="line">      </span><br><span class="line">		attribute.String(<span class="string">&quot;MyEventKey&quot;</span>, <span class="string">&quot;MyEventValue&quot;</span>)),</span><br><span class="line">	)</span><br><span class="line">	note, err := h.notesStorage.Get(ctx, noteID)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> errors.Is(err, models.ErrNotFound) &#123;</span><br><span class="line">			<span class="keyword">return</span> fiber.NewError(fiber.StatusNotFound, err.Error())</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> fiber.NewError(fiber.StatusInternalServerError, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	span.AddEvent(<span class="string">&quot;write note in json&quot;</span>) <span class="comment">// &lt;------</span></span><br><span class="line">	<span class="keyword">return</span> fiberctx.JSON(note)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Если откроем подробности нового спана, то увидим следующее</p>
+<p><img src="/images/open-telemetry-easy13.png" alt="kubernest: Jaeger"></p>
+<p>Цифры здесь - это не время выполнения, а количество времени, пройденное с начала спана (иными словами offset). Например, реальное время выполнения запроса в редис = время спана - предыдущий сдвиг = 914 - 43 = 871 микросекунд.</p>
+<h2 id="Состояния-спанов-и-ошибки"><a href="#Состояния-спанов-и-ошибки" class="headerlink" title="Состояния спанов и ошибки"></a>Состояния спанов и ошибки</h2><p>Остановим Redis и попробуем выполнить запрос:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker ps --format <span class="string">&#x27;&#123;&#123;.ID&#125;&#125; &#123;&#123;.Names&#125;&#125;&#x27;</span></span><br><span class="line">3d69134be67f trace-example-redis-1</span><br><span class="line">830c81a3b071 trace-example-jaeger-1</span><br><span class="line">$ docker stop 3d69134be67f</span><br><span class="line">3d69134be67f</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/open-telemetry-easy14.png" alt="kubernest: Postman"><br><img src="/images/open-telemetry-easy15.png" alt="kubernest: У трейса появились ошибки"></p>
+<p><img src="/images/open-telemetry-easy16.png" alt="kubernest: Jaeger"></p>
+<p>По трейсу можно понять, что клиент редиса попытался 4 раза восстановить соединение, но в конце вернул ошибку. Подробности можем увидеть в родительском спане:</p>
+<p><img src="/images/open-telemetry-easy17.png" alt="kubernest: Jaeger"></p>
+<p>Но почему мы видим тип *fiber.Error? Ранее подключенный middleware от otelfiber проверяет ошибку нашего обработчика (handler’а). Если err != nil, то он записывает ошибку в спан с помощью метода span.RecordError(err) . Добавим эту строку в наш код:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;go.opentelemetry.io/otel/codes&quot;</span></span><br><span class="line">....</span><br><span class="line">    err := h.notesStorage.Store(ctx, ......)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		span.RecordError(err)</span><br><span class="line">		span.SetStatus(codes.Error, err.Error())</span><br><span class="line">      </span><br><span class="line">		<span class="keyword">return</span> fiber.NewError(fiber.StatusInternalServerError, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<p>Обратите внимание на дополнительный вызов span.SetStatus . Из описания RecordError:</p>
+<blockquote>
+<p>An additional call to SetStatus is required if the Status of the Span should be set to Error, as this method does not change the Span status</p>
+</blockquote>
+<p>Ранее говорилось, что спан имеет один из двух статусов: Ok и Error . В коде выше мы дополнительно задаем этот статус (хотя Jeager считает трейс с ошибкой даже без него).</p>
+<p>В запись ошибки также можно добавить артибуты, как в спан и его ивенты:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">span.RecordError(err, trace.WithAttributes(</span><br><span class="line">    attribute.String(<span class="string">&quot;SomeErrorInfo&quot;</span>, <span class="string">&quot;FATAL!!!!&quot;</span>)),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><img src="/images/open-telemetry-easy18.png" alt="kubernest: Jaeger"></p>
+<p>Теперь ошибка будет записываться не только через инструментарий, но и в нашем коде. Если вы поднимаете все ошибки наверх, то вызывать span.RecordError можно только на уровне транспорта или сервисов. В противном случае (если ошибки логируются на месте), может быть полезно добавление записи на каждом этапе.</p>
+<h2 id="Sampling-rate"><a href="#Sampling-rate" class="headerlink" title="Sampling rate"></a>Sampling rate</h2><p>При высоких нагрузках выполнять трейс на каждый запрос крайне избыточно. OpenTelemetry имеет параметр Sampling probability. Существует несколько способов его настройки:</p>
+<ol>
+<li>Через tracesdk.TraceIDRatioBased<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">provider := tracesdk.NewTracerProvider(</span><br><span class="line">    ......</span><br><span class="line">	tracesdk.WithSampler(</span><br><span class="line">		tracesdk.TraceIDRatioBased(<span class="number">0.1</span>),</span><br><span class="line">	),</span><br><span class="line">)</span><br></pre></td></tr></table></figure></li>
+<li>Через переменные окружения<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">OTEL_TRACES_SAMPLER=traceidratio \</span><br><span class="line">OTEL_TRACES_SAMPLER_ARG=0.1 \</span><br><span class="line">go run cmd/main.go</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>Например, при значении 0.1 из 10000 трейсов будут записаны только 1000*0.1=100 . При 1.0 будут записаны все трейсы, а с 0.0 - никакие.</p>
+<p>Значение, которое должен иметь коефициент, зависит от нагрузки вашего приложения. Зачастую его можно узнать обычным подбором и сравнением с временем ответа сервиса без трейсинга. Значение по-умолчанию равно 1.0</p>
+<h3 id="Заключение"><a href="#Заключение" class="headerlink" title="Заключение"></a>Заключение</h3><p>Код: <a target="_blank" rel="noopener" href="https://github.com/kubernest/tracing-example">https://github.com/kubernest/tracing-example</a></p>
+<p>В этой статье я хотел показать, что страшное слово трейсинг - всего лишь полчаса чтения документации. Добавив буквально несколько строчек в клиенты используемых продуктов мы можем легко отследить любое выполнение с малейшими подробностями, а с ручными спанами вообще узнать всю нужную информацию не залезая в код.</p>
+<p>Много информации было взято из официальных документаций:</p>
+<p><a target="_blank" rel="noopener" href="https://opentelemetry.io/docs/instrumentation/go/">https://opentelemetry.io/docs/instrumentation/go/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.41/getting-started/">https://www.jaegertracing.io/docs/1.41/getting-started/</a></p>
+<p>В следующей статье мы рассмотрим трейсинг между микросервисами, который (спойлер) тоже реализуется одной строкой.</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://blog.kubernest.com/2024/11/01/observability/tracing/" data-id="cm3rgeje80001c0wl0179bdq4" class="article-share-link"><i class="fa fa-share"></i>Поделиться</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "author": {
+            "@type": "Person",
+            "name": "авторы проекта kubernest"
+        },
+        "headline": "Трейсинг в Go — это просто, как дважды два",
+        "image": "https://blog.kubernest.com/images/open-telemetry-easy1.png",
+        "keywords": "Оbservability, OpenTelemetry",
+        "genre": "Оbservability OpenTelemetry",
+        "datePublished": "2024-11-01",
+        "dateCreated": "2024-11-01",
+        "dateModified": "2024-11-21",
+        "url": "https://blog.kubernest.com/2024/11/01/observability/tracing/",
+        "description": "Краткое содержание статьи• В эпоху быстрорастущих сервисов важно контролировать состояние системы.• Логи и метрики помогают следить за различными параметрами, такими как запросы в секунду, потребление",
+        "wordCount": 3801
+    }
+</script>
+
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="vk_comments"></div>
+    <script type="text/javascript">
+      window.onload = function () {
+      VK.init({apiId: 52539355, onlyWidgets: true});
+      VK.Widgets.Comments("vk_comments", {limit: 20, attach: "*", autoPublish: 1, pageUrl: "https://blog.kubernest.com/2024/11/01/observability/tracing/"});
+    }
+   </script>
+
+    
+    </section>
+
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>Подписаться:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="vk" href="https://vk.com/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-vk"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="telegram" href="https://t.me/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-telegram"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="youtube" href="https://www.youtube.com/c/KuberNest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-youtube"></i>
+                    </a>
+                </li>
+                
+            
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="twitter" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-twitter"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="facebook" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-facebook"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/atom.xml" target="_blank" rel="noopener">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2024/10/01/observability/open-telemetry/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">старые</strong>
+        <p class="article-nav-title">OpenTelemetry на практике</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">недавние</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/11/01/observability/tracing/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry-easy1.png)" alt="Трейсинг в Go — это просто, как дважды два" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/11/01/observability/tracing/" class="title">Трейсинг в Go — это просто, как дважды два</a></p>
+                            <p class="item-date"><time datetime="2024-11-01T10:20:00.000Z" itemprop="datePublished">2024-11-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/observability/open-telemetry/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry.png)" alt="OpenTelemetry на практике" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/10/01/observability/open-telemetry/" class="title">OpenTelemetry на практике</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:20:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/kafka/consumer_group/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/Kafka_Internals_Group.png)" alt="Consumer Group Protocol" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Kafka/">Kafka</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></p>
+                            <p class="item-title"><a href="/2024/10/01/kafka/consumer_group/" class="title">Consumer Group Protocol</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/01/observability/engineering/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/kubernest_pm.png)" alt="Для чего нужен Observability Engineering" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></p>
+                            <p class="item-title"><a href="/2024/10/01/observability/engineering/" class="title">Для чего нужен Observability Engineering</a></p>
+                            <p class="item-date"><time datetime="2024-10-01T09:18:00.000Z" itemprop="datePublished">2024-10-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/08/08/observability/open-telemetry-sugar/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry-sugar1.png)" alt="Что такое OpenTelemetry и как она может улучшить качество ваших сервисов" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/08/08/observability/open-telemetry-sugar/" class="title">Что такое OpenTelemetry и как она может улучшить качество ваших сервисов</a></p>
+                            <p class="item-date"><time datetime="2024-08-08T09:22:00.000Z" itemprop="datePublished">2024-08-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Категории</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">30</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/">Algorithms</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/">GRPC</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">28</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/">Kafka</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Consumer-Group/">Consumer Group</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">архивы</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">ноябрь 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">октябрь 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">август 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">июль 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">июнь 2024</a><span class="archive-list-count">39</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Тэги</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Q-A/" rel="tag">Golang, Q&A</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka-Consumer-Group/" rel="tag">Kafka, Consumer Group</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Logs/" rel="tag">Оbservability, Logs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Observability-Engineering/" rel="tag">Оbservability, Observability Engineering</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-OpenTelemetry/" rel="tag">Оbservability, OpenTelemetry</a><span class="tag-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">Облако тэгов</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Golang-Q-A/" style="font-size: 20px;">Golang, Q&A</a> <a href="/tags/Kafka-Consumer-Group/" style="font-size: 10px;">Kafka, Consumer Group</a> <a href="/tags/%D0%9Ebservability-Logs/" style="font-size: 10px;">Оbservability, Logs</a> <a href="/tags/%D0%9Ebservability-Observability-Engineering/" style="font-size: 10px;">Оbservability, Observability Engineering</a> <a href="/tags/%D0%9Ebservability-OpenTelemetry/" style="font-size: 15px;">Оbservability, OpenTelemetry</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">ссылки</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://vk.com/kubernest">мы в vk</a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://www.youtube.com/c/Kubernest">мы в youtube</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2024 авторы проекта kubernest</p>
+                
+                <p>Powered by <a href="https://designest.ru/" target="_blank">DESIGNest Studio Ltd</a></p>
+                
+            </div>
+            <div class="footer-plugins">
+                
+			<!-- Yandex.RTB R-A-1394392-1 -->
+			<div id="yandex_rtb_R-A-1394392-1"></div>
+			<script>window.yaContextCb.push(()=>{Ya.Context.AdvManager.render({renderTo: 'yandex_rtb_R-A-1394392-1',  blockId: 'R-A-1394392-1' }) })</script>
+                
+              
+    
+
+
+            </div>
+        </div>
+    </div>
+</footer>                                                                                            
+
+    </div>
+    
+    
+    <script type="text/javascript">
+    var vk_shortname = 'true';
+    (function() {
+    var vk = document.createElement('script');
+    vk.type = 'text/javascript';
+    vk.async = true;
+    vk.src = '//vk.com/js/api/openapi.js?169'; 
+    vk.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+    || document.getElementsByTagName('body')[0]).appendChild(vk);
+    })();
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+</body>
+</html>
