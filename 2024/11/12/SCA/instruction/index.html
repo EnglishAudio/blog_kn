@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    
+
+    
+    <title>Инструкция по SCA, генерация SBOM, инструменты, отличия | Kubernest tech blog</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="InfoSec, Software Composition Analysis" />
+    
+    <meta name="description" content="SCA (Software Composition Analysis) — методология анализа компонентов приложений. Анализ позволяет обнаружить уязвимые компоненты, слабые места безопасности или проблемы лицензирования.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Инструкция по SCA, генерация SBOM, инструменты, отличия">
+<meta property="og:url" content="https://blog.kubernest.com/2024/11/12/SCA/instruction/index.html">
+<meta property="og:site_name" content="Kubernest tech blog">
+<meta property="og:description" content="SCA (Software Composition Analysis) — методология анализа компонентов приложений. Анализ позволяет обнаружить уязвимые компоненты, слабые места безопасности или проблемы лицензирования.">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://blog.kubernest.com/images/sca-sbom.jpg">
+<meta property="article:published_time" content="2024-11-12T10:18:00.000Z">
+<meta property="article:modified_time" content="2024-11-26T19:23:42.136Z">
+<meta property="article:author" content="авторы проекта kubernest">
+<meta property="article:tag" content="InfoSec, Software Composition Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.kubernest.com/images/sca-sbom.jpg">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Kubernest tech blog" type="application/atom+xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Kubernest tech blog" href="https://blog.kubernest.com/rss-feed.xml" />
+     
+
+     
+        <link rel="amphtml" href="https://blog.kubernest.com/amp2024/11/12/SCA/instruction/">
+     
+
+
+    
+        <link rel="icon" href="/css/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+        <link rel="icon" type="image/png" sizes="120x120" href="/apple-touch-icon-120x120.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+    
+
+    
+       <!-- Yandex.RTB -->
+       <script>window.yaContextCb=window.yaContextCb||[]</script>
+       <script src="https://yandex.ru/ads/system/context.js" async></script>
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/3.5.0/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PWEJT515P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4PWEJT515P');
+</script>
+<!-- End Google Analytics -->
+
+    
+    
+        <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(86613025, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<!-- /Yandex.Metrika counter -->
+    
+    
+    
+
+
+</head>
+
+<body>
+         <div id="rec541324929" class="r t-rec" style=" " data-animationappear="off" data-record-type="131">
+            <!-- T123 -->
+            <div class="t123">
+                <div class="t-container_100 ">
+                    <div class="t-width t-width_100 ">
+                        <style>
+                            html, html *, body, body * {
+                                cursor: none;
+                            }
+    
+                            .cursor-dot, .cursor-dot-outline {
+                                mix-blend-mode: normal;
+                                pointer-events: none;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                border-radius: 50%;
+                                opacity: 0;
+                                position: fixed;
+                                -webkit-transform: translate(-50%, -50%);
+                                transform: translate(-50%, -50%);
+                                -webkit-transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out;
+                            }
+    
+                            .cursor-dot {
+                                z-index: 99999999;
+                                width: 8px;
+                                height: 8px;
+                                background-color: rgba(0, 195, 255, 0.72);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #016ffe;
+                            }
+    
+                            .cursor-dot-outline {
+                                z-index: 99999998;
+                                width: 36px;
+                                height: 36px;
+                                background-color: rgb(0, 162, 255);
+                                border: solid;
+                                border-radius: 50%;
+                                border-width: 0px;
+                                border-color: #000;
+                                filter: blur(18px);
+                            }
+                        </style>
+                        <script>
+    
+                            $("body").prepend('<div class="cursor-dot-outline"></div>');
+                            $("body").prepend('<div class="cursor-dot"></div>');
+    
+                            var cursor = {
+                                delay: 8,
+                                _x: 0,
+                                _y: 0,
+                                endX: (window.innerWidth / 2),
+                                endY: (window.innerHeight / 2),
+                                cursorVisible: true,
+                                cursorEnlarged: false,
+                                $dot: document.querySelector('.cursor-dot'),
+                                $outline: document.querySelector('.cursor-dot-outline'),
+    
+                                init: function() {
+                                    this.dotSize = this.$dot.offsetWidth;
+                                    this.outlineSize = this.$outline.offsetWidth;
+    
+                                    this.setupEventListeners();
+                                    this.animateDotOutline();
+                                },
+    
+                                setupEventListeners: function() {
+                                    var self = this;
+    
+                                    document.querySelectorAll('a').forEach(function(el) {
+                                        el.addEventListener('mouseover', function() {
+                                            self.cursorEnlarged = true;
+                                            self.toggleCursorSize();
+                                        });
+                                        el.addEventListener('mouseout', function() {
+                                            self.cursorEnlarged = false;
+                                            self.toggleCursorSize();
+                                        });
+                                    });
+    
+                                    document.addEventListener('mousedown', function() {
+                                        self.cursorEnlarged = true;
+                                        self.toggleCursorSize();
+                                    });
+                                    document.addEventListener('mouseup', function() {
+                                        self.cursorEnlarged = false;
+                                        self.toggleCursorSize();
+                                    });
+    
+                                    document.addEventListener('mousemove', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+    
+                                        self.endX = e.clientX;
+                                        self.endY = e.clientY;
+                                        self.$dot.style.top = self.endY + 'px';
+                                        self.$dot.style.left = self.endX + 'px';
+                                    });
+    
+                                    document.addEventListener('mouseenter', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    });
+    
+                                    document.addEventListener('mouseleave', function(e) {
+                                        self.cursorVisible = true;
+                                        self.toggleCursorVisibility();
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    });
+                                },
+    
+                                animateDotOutline: function() {
+                                    var self = this;
+    
+                                    self._x += (self.endX - self._x) / self.delay;
+                                    self._y += (self.endY - self._y) / self.delay;
+                                    self.$outline.style.top = self._y + 'px';
+                                    self.$outline.style.left = self._x + 'px';
+    
+                                    requestAnimationFrame(this.animateDotOutline.bind(self));
+                                },
+    
+                                toggleCursorSize: function() {
+                                    var self = this;
+    
+                                    if (self.cursorEnlarged) {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(4)';
+                                        self.$outline.style.transform = "translate(-50%, -50%) scale(0.00)";
+                                    } else {
+                                        self.$dot.style.transform = 'translate(-50%, -50%) scale(1)';
+                                        self.$outline.style.transform = 'translate(-50%, -50%) scale(1)';
+                                    }
+                                },
+    
+                                toggleCursorVisibility: function() {
+                                    var self = this;
+    
+                                    if (self.cursorVisible) {
+                                        self.$dot.style.opacity = 1;
+                                        self.$outline.style.opacity = 1;
+                                    } else {
+                                        self.$dot.style.opacity = 0;
+                                        self.$outline.style.opacity = 0;
+                                    }
+                                }
+                            }
+                            cursor.init();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">                                                                                                                                                          
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo">
+                        </a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">Главная</a>
+                                </li>
+                            
+                                    <ul class="main-nav-list"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/">Golang</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/Algorithms/">Algorithms</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/GRPC/">GRPC</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/InfoSec/">InfoSec</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/InfoSec/Software-Composition-Analysis/">Software Composition Analysis</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/">Kafka</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></li></ul></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><ul class="main-nav-list-child"><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a></li><li class="main-nav-list-item"><a class="main-nav-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a></li></ul></li></ul>
+                                
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" target="_blank" rel="noopener" href="https://kubernest.com/index.html">О сайте</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+<div class="ya-site-form ya-site-form_inited_no" data-bem="{&quot;action&quot;:&quot;/search.html&quot;,&quot;arrow&quot;:false,&quot;bg&quot;:&quot;transparent&quot;,&quot;fontsize&quot;:12,&quot;fg&quot;:&quot;#000000&quot;,&quot;language&quot;:&quot;ru&quot;,&quot;logo&quot;:&quot;rb&quot;,&quot;publicname&quot;:&quot;����� �� ����� GoXpert&quot;,&quot;suggest&quot;:true,&quot;target&quot;:&quot;_blank&quot;,&quot;tld&quot;:&quot;ru&quot;,&quot;type&quot;:2,&quot;usebigdictionary&quot;:true,&quot;searchid&quot;:2519671,&quot;input_fg&quot;:&quot;#000000&quot;,&quot;input_bg&quot;:&quot;#ffffff&quot;,&quot;input_fontStyle&quot;:&quot;normal&quot;,&quot;input_fontWeight&quot;:&quot;normal&quot;,&quot;input_placeholder&quot;:&quot;&quot;,&quot;input_placeholderColor&quot;:&quot;#000000&quot;,&quot;input_borderColor&quot;:&quot;#7f9db9&quot;}">
+<form action="https://yandex.ru/search/site/" method="get" target="_blank" accept-charset="utf-8">
+<input type="hidden" name="searchid" value="2519671"/>
+<input type="hidden" name="l10n" value="ru"/>
+<input type="hidden" name="reqenc" value=""/>
+<input type="search" name="text" value=""/>
+<input type="submit" value="�����"/>
+</form>
+</div>
+    <style type="text/css">.ya-page_js_yes .ya-site-form_inited_no { display: none; }
+</style>
+<script type="text/javascript">
+(function(w,d,c){var s=d.createElement('script'),h=d.getElementsByTagName('script')[0],e=d.documentElement;
+if((' '+e.className+' ').indexOf(' ya-page_js_yes ')===-1)
+{e.className+=' ya-page_js_yes';}s.type='text/javascript';
+s.async=true;s.charset='utf-8';
+s.src=(d.location.protocol==='https:'?'https:':'http:')+'//site.yandex.net/v2.0/js/all.js';
+h.parentNode.insertBefore(s,h);(w[c]||(w[c]=[])).push(function(){
+
+Ya.Site.Form.init()
+
+})})(window,document,'yandex_site_callbacks');</script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/InfoSec/">InfoSec</a><i class="icon fa fa-angle-right"></i><a class="page-title-link" href="/categories/InfoSec/Software-Composition-Analysis/">Software Composition Analysis</a>
+    </h1>
+</div>
+
+                        <div class="main-body-content">
+                            <article id="post-SCA/instruction" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Инструкция по SCA, генерация SBOM, инструменты, отличия
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+  <div class="article-date">
+    <i class="fa fa-calendar"></i>
+    <a href="/2024/11/12/SCA/instruction/" class="article-date">
+       <time datetime="2024-11-12T10:18:00.000Z" itemprop="datePublished">2024-11-12</time>
+    </a>
+  </div>
+
+
+<div class="article-date">
+  <i class="fa fa-calendar-plus-o"></i>
+  <a href="/2024/11/12/SCA/instruction/" class="article-date">
+     <time datetime="2024-11-26T19:23:42.136Z" itemprop="dateModified">2024-11-26</time>
+  </a>
+</div>
+
+
+                
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/InfoSec-Software-Composition-Analysis/" rel="tag">InfoSec, Software Composition Analysis</a>
+    </div>
+
+                
+
+                
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+
+            
+
+            
+
+            <!-- feed_rem_st --><!-- feed_rem_end --><h2 id="Нужен-ли-SCA"><a href="#Нужен-ли-SCA" class="headerlink" title="Нужен ли SCA?"></a>Нужен ли SCA?</h2><p>Анализ сторонних компонентов ПО становится всё более актуальным в свете увеличения числа уязвимостей в открытом исходном коде. Популярные репозитории содержат более 20 тысяч потенциально опасных пакетов, в широко используемых библиотеках часто обнаруживаются уязвимости, которые делают небезопасным весь программный продукт.</p>
+<p>Добрый день! Меня зовут <a target="_blank" rel="noopener" href="http://kubernest.com/dmitry-sigaev/">Дмитрий Сигаев</a> и в этом блоге я делюсь своим опытом в разработки высоконагруженных системах.<br>Хорошая высоконагруженная система должна быть безопастной и уствойчивой к атакам. Поэтому сегодня мы поговорим об SCA или Software Composition Analysis (анализ состава программного обеспечения).<br>Сегодня мы поговорим о спецификации SBOM (Software Bill of Material) и как она может помочь решить проблему отслеживания уязвимостей в исходном коде сторонних библиотек. Также обсудим, в каких сферах используется SBOM, какими форматами представлен и какое применение находит в информационной безопасности, в частности, в рамках SCA-анализа.</p>
+<p>Эта статья будет интересна как специалистам ИБ, так и разработчикам, желающим сделать свой продукт безопаснее.</p>
+<p><img src="/images/sca-sbom.jpg" alt="Software Composition Analysis (анализ состава программного обеспечения)."></p>
+<h2 id="SBOM-библиотеки-их-лицензии-и-уязвимости"><a href="#SBOM-библиотеки-их-лицензии-и-уязвимости" class="headerlink" title="SBOM: библиотеки, их лицензии и уязвимости"></a>SBOM: библиотеки, их лицензии и уязвимости</h2><p>Библиотеки с открытым исходным кодом – это ПО, исходный код которого можно свободно изучать, распространять и изменять (если нет ограничения лицензии компонента – об этом расскажем в будущих статьях). Создают их как энтузиасты, так и специалисты крупных корпораций. Они выкладывают такие библиотеки на Github или в официальные репозитории, например, maven или npm. Разработчики часто используют это решение, чтобы сэкономить время и деньги компании. Они импортируют библиотеки в свой код и применяют их функции для решения проектных задач.</p>
+<p>В то же время применение ПО с открытым исходным кодом несет определенные риски. Помимо вредоносного кода, заведомо внедренного в библиотеку для нанесения ущерба во время сборки и эксплуатации, такое ПО может содержать код, в котором не использовались практики безопасной разработки (например, фильтрация и валидация данных). Это может привести к различным проблемам безопасности. Один из ярких примеров – уязвимость Log4shell, которая была обнаружена (причем несколько раз) в популярной библиотеке для логирования в Java – Log4j. Из-за этого множество приложений и организаций оказались скомпрометированы, поскольку они так или иначе использовали ее в своем составе или периметре. Компаниям важно следить за библиотеками, применяемыми при разработке программных продуктов, а также иметь актуальную информацию о проблемах безопасности, которые в них находят. В этом поможет формирование файла SBOM.</p>
+<p>SBOM – это файл в формате JSON или XML, который включает в себя инвентаризационный список всех компонентов (пакетов, библиотек), используемых в разрабатываемом приложении или необходимых для его работы.</p>
+<p>Существуют и другие файлы манифестов, которые можно создавать и поддерживать самостоятельно в разных форматах. Большинство компаний используют CycloneDX, SPDX (Software Packet Data Exchange) и SWID (Software Identification). В этой статье мы поговорим о CycloneDX.</p>
+<p>SBOM состоит из нескольких блоков. Перечислим основные:</p>
+<ol>
+<li>Метаданные самого файла SBOM: спецификация, уникальный номер, время генерации (метка времени);</li>
+<li>Перечень компонентов;</li>
+<li>Описание источника SBOM (блок externalReferences);</li>
+<li>Описание связей между компонентами (блок dependencies).</li>
+</ol>
+<p><img src="/images/sbom-struct.webp" alt="Три столпа наблюдаемости"></p>
+<p>Спецификация SBOM достаточно обширная и гибкая, в ней можно увидеть дополнительные секции, а также добавить собственные.</p>
+<p>Формат CycloneDX представляет собой файл JSON или XML.</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">&quot;bomFormat&quot;</span>: <span class="string">&quot;CycloneDX&quot;</span>, <span class="attr">&quot;specVersion&quot;</span>: <span class="string">&quot;1.4&quot;</span>, <span class="attr">&quot;serialNumber&quot;</span>: <span class="string">&quot;urn:uuid:3e673487-395b-41h8-a30f-a58468a69b86&quot;</span>, <span class="attr">&quot;version&quot;</span>: <span class="number">1</span>, <span class="attr">&quot;comComponents&quot;</span>: [ &#123; <span class="attr">&quot; тип&quot;</span>: <span class="string">&quot;библиотека&quot;</span>, <span class="attr">&quot;имя&quot;</span>: <span class="string">&quot;nacl-library&quot;</span>, <span class="attr">&quot;версия&quot;</span>: <span class="string">&quot;1.0.0&quot;</span> &#125; ] &#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>В components SBOM указывается автор пакета, purl (Package URL), лицензия, хэш библиотеки, CPE (Common Platform Enumeration) и другие компоненты.</p>
+<p>Блок dependencies содержит название пакета из исходного кода и его зависимости, то есть пакеты, которые необходимы ему для работы. С помощью данных dependencies и названий библиотек можно построить граф зависимостей, в том числе транзитивных.</p>
+<p>Это поле выглядит так (у первого компонента две зависимости, у второго – ни одной из-за отсутствия поля dependsOn):</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;ref&quot;</span>: <span class="string">&quot;pkg:npm/config-chain@1.1.13&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;dependsOn&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;pkg:npm/ini@1.3.8&quot;</span>,</span><br><span class="line">    <span class="string">&quot;pkg:npm/proto-list@1.2.4&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;ref&quot;</span>: <span class="string">&quot;pkg:npm/core-util-is@1.0.2&quot;</span></span><br><span class="line">&#125;,</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Не все зависимости, описанные в файле манифеста, включаются в артефакт сборки. Одни нужны только для сборки пакета, другие – для теста. А третьи доступны в среде запуска приложения, но не становятся его частью.</p>
+<h2 id="Зачем-SBOM-нужен-в-сфере-ИБ"><a href="#Зачем-SBOM-нужен-в-сфере-ИБ" class="headerlink" title="Зачем SBOM нужен в сфере ИБ?"></a>Зачем SBOM нужен в сфере ИБ?</h2><p>SBOM позволяет решить две связанные задачи:</p>
+<ol>
+<li><p>Инвентаризировать все использованные в продукте (исходном коде, артефакте, операционной системе) компоненты;</p>
+</li>
+<li><p>Автоматизировать анализ их безопасности с помощью инструментов SCA (Software Composition Analysis). Политики безопасности могут включать в себя проверку этих компонентов на уязвимости и на лицензионную чистоту, а также на дату публикации, имя автора и другие элементы.</p>
+</li>
+</ol>
+<p>Решение обеих задач позволит снизить риск атаки на цепочку поставок ПО.</p>
+<p>Практика SCA используется для анализа безопасности сторонних Open Source компонентов в приложении. Есть два подхода в работе инструментов SCA. В первом они самостоятельно сканируют исходный код, артефакт и файлы манифеста, перечень компонентов получают в виде SBOM или проприетарного формата (Dependency-Check). Во втором случае для работы инструментов SCA требуется уже собранный SBOM-файл (Dependency-Track).</p>
+<p>С помощью инструментов SCA происходит поиск информации об уязвимостях в открытых базах данных по одному из двух идентификаторов библиотеки – CPE или purl. Если они сформированы некорректно, это может спровоцировать ложное срабатывание (False Positive) или его отсутствие (False Negative). Также анализируется хэш библиотеки, если есть опасения, что ее могут подменить или внести корректировки в исходный код. Данные из приведенных выше полей позволяют найти все актуальные уязвимости в открытых источниках.</p>
+<p>Стоит отметить, что наличие уязвимой библиотеки в составе ПО еще не говорит о присутствии уязвимости, которую могли бы эксплуатировать злоумышленники. Для этого уязвимая функция должна быть достижима из кода, и никакие дополнительные меры безопасности не могут быть применены к данным, которые в такую функцию попадают. Большинство инструментов SCA не отвечают на вопрос о возможности эксплуатации, здесь требуется ревью AppSec-инженера или разработчика. Однако сейчас некоторые из инструментов уже начинают анализировать совместно и код, и набор библиотек, чтобы снизить количество False Positive срабатываний и объем ручной работы по их нахождению.</p>
+<h2 id="Какой-инструмент-выбрать-для-своих-задач"><a href="#Какой-инструмент-выбрать-для-своих-задач" class="headerlink" title="Какой инструмент выбрать для своих задач?"></a>Какой инструмент выбрать для своих задач?</h2><p>Для выбора инструмента, с которым вы будете работать, важно учесть следующие особенности проекта:</p>
+<ol>
+<li><p>Язык программирования, на котором написан ваш продукт;</p>
+</li>
+<li><p>Файлы с транзитивными зависимостями, которые может сканировать каждый из инструментов (одни могут сканировать только файлы манифестов, такие как pom.xml или requirements.txt, другие – искать зависимости в большем числе файлов);</p>
+</li>
+<li><p>Объект сканирования: репозиторий с исходным кодом, артефакт, Docker-образ, файловая система;</p>
+</li>
+<li><p>Окружение: какой SCA-инструмент используется для сканирования, какой формат SBOM (CycloneDX, SPDX) и тип файла (XML, JSON) он может принять на вход;</p>
+</li>
+<li><p>Цели: нужно искать зависимости только проекта или требуется также подтягивать сборочные и другие зависимости.</p>
+</li>
+</ol>
+<p>Как сформировать SBOM для исходного кода?<br>Существуют несколько инструментов генерации SBOM, подробнее со всеми можно ознакомиться на <a target="_blank" rel="noopener" href="https://github.com/awesomeSBOM/awesome-sbom#tools-and-classification">GitHub</a>. Мы разберем самые популярные – Cdxgen, Trivy и Syft.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Инструмент</th>
+<th align="center">Cdxgen 10.1.0</th>
+<th align="center">Trivy 0.47</th>
+<th align="center">Syft 0.104.0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Ссылка на проект</td>
+<td align="center"><a target="_blank" rel="noopener" href="https://github.com/CycloneDX/cdxgen">Cdxgen</a></td>
+<td align="center"><a target="_blank" rel="noopener" href="https://github.com/aquasecurity/trivy">Trivy</a></td>
+<td align="center"><a target="_blank" rel="noopener" href="https://github.com/anchore/syft">Syft</a></td>
+</tr>
+<tr>
+<td align="left">Написан на языке программирования</td>
+<td align="center">JavaScript</td>
+<td align="center">Go</td>
+<td align="center">Go</td>
+</tr>
+<tr>
+<td align="left">Информация о поддержке ЯП</td>
+<td align="center"><a target="_blank" rel="noopener" href="https://github.com/CycloneDX/cdxgen#supported-languages-and-package-format">Ссылка</a></td>
+<td align="center"><a target="_blank" rel="noopener" href="https://aquasecurity.github.io/trivy/v0.47/docs/coverage/language/">Ссылка</a></td>
+<td align="center"><a target="_blank" rel="noopener" href="https://github.com/anchore/syft#supported-ecosystems">Ссылка</a></td>
+</tr>
+<tr>
+<td align="left">Отслеживание лицензий</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Создание дерева зависимостей</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Формат SBOM</td>
+<td align="center">CycloneDX</td>
+<td align="center">CycloneDX, SPDX, KBOM in CycloneDX format</td>
+<td align="center">CycloneDX, SPDX, Syft’s own format</td>
+</tr>
+<tr>
+<td align="left">Apk</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">C / C++</td>
+<td align="center">✅/✅</td>
+<td align="center">✅/✅</td>
+<td align="center">✅/✅</td>
+</tr>
+<tr>
+<td align="left">Clojure</td>
+<td align="center">✅</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Dart</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">Debian</td>
+<td align="center">✅</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">.NET</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Objective-C</td>
+<td align="center"></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Elixir</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Erlang</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Go</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Haskell</td>
+<td align="center">✅</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Java</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">JavaScript</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Perl</td>
+<td align="center">✅</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">PHP</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Python</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">R</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Ruby</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Rust</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Swift</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="left">Docker</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+</tbody></table>
+<h3 id="Cdxgen-установка-и-работа"><a href="#Cdxgen-установка-и-работа" class="headerlink" title="Cdxgen: установка и работа"></a>Cdxgen: установка и работа</h3><p>Cdxgen – CLI-инструмент, написанный на JavaScript. Он позволяет собирать зависимости как определенного языка программирования, так и всего проекта. Cdxgen отличается тем, что умеет сканировать не только файлы манифестов, но и некоторые файлы исходного кода – это делает список найденных компонентов более обширным.</p>
+<p><img src="/images/sca-sbom-2.png" alt="Software Composition Analysis (анализ состава программного обеспечения)."></p>
+<p>Бенчмарк указывает следующие недостатки по категориям требований:</p>
+<ul>
+<li><p>NTIA-Minimum-Elements: отсутствует метка времени создания самого файла SBOM;</p>
+</li>
+<li><p>Quality: нет основной цели компонента и информации об истекших или неактуальных лицензиях;</p>
+</li>
+<li><p>Semantic: не всегда есть контрольные суммы компонентов;</p>
+</li>
+<li><p>Sharing: отсутствует информация о лицензии, под которой распространяется SBOM.</p>
+</li>
+</ul>
+<p>Установка cdxgen:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g @cyclonedx/cdxgen</span><br></pre></td></tr></table></figure>
+
+<p>Запуск cdxgen для локального репозитория:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cdxgen -t &lt;language&gt; -o &lt;output-file&gt; --spec-version 1.4</span><br></pre></td></tr></table></figure>
+
+<p>-t (–type) – язык программирования репозитория (если не указывать этот параметр, то инструмент соберет вообще все зависимости, которые сможет. Взять можно здесь: <a target="_blank" rel="noopener" href="https://github.com/CycloneDX/cdxgen#supported-languages-and-package-format">https://github.com/CycloneDX/cdxgen#supported-languages-and-package-format</a>);</p>
+<p>-o (–output) – файл, в который нужно сохранить SBOM (в форматах XML, JSON);</p>
+<p>–spec-version 1.4 – версия SBOM, с которой работают большинство инструментов;</p>
+<p>–required-only – можно использовать для исключения сборочных зависимостей.</p>
+<p>Включение cdxgen на запущенной операционной системе (в этом режиме найдет все пакеты ОС):</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cdxgen -t os -o &lt;output-file&gt;</span><br></pre></td></tr></table></figure>
+<p>Запуск cdxgen для артефактов war:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cdxgen -t java app.war -o &lt;output-file&gt;</span><br></pre></td></tr></table></figure>
+<p>Таблица файлов, с которыми работает cdxgen версии 10.1.0:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Language/ Platform</th>
+<th align="center">Package format</th>
+<th align="center">Transitive dependencies</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Node.js</td>
+<td align="center">npm-shrinkwrap.json, package-lock.json, pnpm-lock.yaml, yarn.lock, rush.js, bower.json, .min.js</td>
+<td align="center">Да, кроме .min.js</td>
+</tr>
+<tr>
+<td align="left">Java</td>
+<td align="center">maven (pom.xml), gradle (build.gradle, .kts), scala (sbt), bazel</td>
+<td align="center">Да, кроме случаев когда pom.xml парсится вручную из-за недоступности maven или ошибок</td>
+</tr>
+<tr>
+<td align="left">Android</td>
+<td align="center">apk, aab</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">PHP</td>
+<td align="center">composer.lock</td>
+<td align="center">Да</td>
+</tr>
+<tr>
+<td align="left">Python</td>
+<td align="center">pyproject.toml, setup.py, requirements.txt, Pipfile.lock, poetry.lock, pdm.lock, bdist_wheel, .whl, .egg-info</td>
+<td align="center">Да, при использовании автоматического pip install/freeze. Если отключено, только для Pipfile.lock и poetry.lock</td>
+</tr>
+<tr>
+<td align="left">Go</td>
+<td align="center">binary, go.mod, go.sum, Gopkg.lock</td>
+<td align="center">Да, кроме бинарных файлов</td>
+</tr>
+<tr>
+<td align="left">Ruby</td>
+<td align="center">Gemfile.lock, gemspec</td>
+<td align="center">Только для Gemfile.lock</td>
+</tr>
+<tr>
+<td align="left">Rust</td>
+<td align="center">binary, Cargo.toml, Cargo.lock</td>
+<td align="center">Только для Cargo.lock</td>
+</tr>
+<tr>
+<td align="left">.NET</td>
+<td align="center">.csproj, packages.config, project.assets.json, packages.lock.json, .nupkg, paket.lock</td>
+<td align="center">Только для project.assets.json, packages.lock.json, paket.lock</td>
+</tr>
+<tr>
+<td align="left">Dart</td>
+<td align="center">pubspec.lock, pubspec.yaml</td>
+<td align="center">Только для pubspec.lock</td>
+</tr>
+<tr>
+<td align="left">Haskell</td>
+<td align="center">cabal.project.freeze</td>
+<td align="center">Да</td>
+</tr>
+<tr>
+<td align="left">Elixir</td>
+<td align="center">mix.lock</td>
+<td align="center">Да</td>
+</tr>
+<tr>
+<td align="left">C/C++/ Objective C</td>
+<td align="center">conan.lock, conanfile.txt, *.cmake, CMakeLists.txt, meson.build, кодовые базы без пакетных менеджеров!</td>
+<td align="center">Да, только для conan.lock. Лучше всего для cmake без номеров версий.</td>
+</tr>
+<tr>
+<td align="left">Clojure</td>
+<td align="center">Clojure CLI (deps.edn), Leiningen (project.clj)</td>
+<td align="center">Да, если файлы не парсятся вручную из-за недостатков clojure cli или команды Leiningen</td>
+</tr>
+<tr>
+<td align="left">Swift</td>
+<td align="center">Package.resolved, Package.swift (swiftpm)</td>
+<td align="center">Да</td>
+</tr>
+</tbody></table>
+<h2 id="Trivy-установка-и-работа"><a href="#Trivy-установка-и-работа" class="headerlink" title="Trivy: установка и работа"></a>Trivy: установка и работа</h2><p>Trivy – CLI-инструмент, написанный на Go. Преимущество Trivy в том, что его можно скомпилировать в виде бинарного файла и запустить на любых системах и агентах CI/CD без дополнительных зависимостей. Инструмент работает как с удаленными git-репозиториями и файловыми системами, так и с Docker-образами, Kubernetes, виртуальными машинами и AWS.</p>
+<p>Trivy может выводить информацию в виде SBOM или таблицы зависимостей с уязвимостями, поэтому важно указывать правильные параметры на вход для этого инструмента.</p>
+<p><img src="/images/sca-sbom-3.png" alt="Software Composition Analysis (анализ состава программного обеспечения)."></p>
+<p>Бенчмарк указывает следующие недостатки по категориям требований:</p>
+<ul>
+<li>NTIA-Minimum-Elements: отсутствует метка времени;</li>
+<li>Quality: нет информации об истекших или неактуальных лицензиях, а также основной цели компонента;</li>
+<li>Semantic: не всегда присутствуют контрольные суммы компонентов;</li>
+<li>Sharing: нет информации о лицензии, под которой распространяется SBOM.<br>Установка Trivy из apt репозитория:<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install trivy</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>Больше информации по установке Trivy в зависимости от окружения можно найти на GitHub.  </p>
+<p>Запуск Trivy для сканирования docker-образа:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trivy image --format cyclonedx --output &lt;output-file&gt; &lt;image&gt;</span><br></pre></td></tr></table></figure>
+<p>–format – формат SBOM;</p>
+<p>–output – название файла SBOM.</p>
+<p>Запуск Trivy для сканирования папки:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trivy fs --format cyclonedx --output &lt;output-file&gt; &lt;/path/to/dir&gt;</span><br></pre></td></tr></table></figure>
+<p>Запуск Trivy для репозитория (локального или по URL):</p>
+<p>Вывод в виде таблицы, в которой указаны только те зависимости, которые имеют уязвимости:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trivy repository -t json &lt;url&gt;</span><br></pre></td></tr></table></figure>
+<p>Создание файла в формате SBOM:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trivy repo --list-all-pkgs --format cyclonedx --output &lt;output-file&gt; &lt;repository&gt; </span><br></pre></td></tr></table></figure>
+<p>–list-all-pkgs – параметр, который выводит все зависимости, несмотря на наличие уязвимостей. Подробнее на GitHub.</p>
+<p>Таблица файлов, с которыми работает Trivy версии 0.47:</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>File</th>
+<th>Image</th>
+<th>Rootfs</th>
+<th>Filesystem</th>
+<th>Repository</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Ruby</td>
+<td>Gemfile.lock</td>
+<td>-</td>
+<td>-</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td></td>
+<td>Gemspec</td>
+<td>✅</td>
+<td>✅</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>Pipfile.lock</td>
+<td>-</td>
+<td>-</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td></td>
+<td>poetry.lock</td>
+<td>-</td>
+<td>-</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td></td>
+<td>requirements.txt</td>
+<td>-</td>
+<td>-</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td></td>
+<td>egg package</td>
+<td>✅</td>
+<td>✅</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td></td>
+<td>wheel package</td>
+<td>✅</td>
+<td>✅</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td></td>
+<td>conda package</td>
+<td>✅</td>
+<td>✅</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p> и т.д.</p>
+<h2 id="Syft-установка-и-работа"><a href="#Syft-установка-и-работа" class="headerlink" title="Syft: установка и работа"></a>Syft: установка и работа</h2><p>Syft – CLI-инструмент для создания SBOM. Он может сканировать как файловые системы, так и образы контейнеров.</p>
+<p><img src="/images/sca-sbom-4.png" alt="Software Composition Analysis (анализ состава программного обеспечения)."></p>
+<p>Бенчмарк указывает следующие недостатки по категориям требований:</p>
+<ul>
+<li><p>NTIA-Minimum-Elements: отсутствует метка времени;</p>
+</li>
+<li><p>Quality: закрыто почти полностью за счет множества CPE для одного пакета и отдельного поля evidence;</p>
+</li>
+<li><p>Semantic: не всегда присутствуют контрольные суммы компонентов, структура SBOM не совсем удобна;</p>
+</li>
+<li><p>Sharing: нет информации о лицензии, под которой распространяется SBOM.</p>
+</li>
+</ul>
+<p>Установка Syft из apt репозитория:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install syft</span><br></pre></td></tr></table></figure>
+<p>Запуск Syft на docker-образе:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syft --output cyclonedx-json=&lt;output-file.json&gt; &lt;image&gt;</span><br></pre></td></tr></table></figure>
+<p>–output - формат вывода и название генерируемого SBOM-файла;</p>
+<p>Запуск Syft для .tar-архива docker-образа:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syft --output cyclonedx-json=&lt;output-file.json&gt; &lt;path/to/image&gt;.tar</span><br></pre></td></tr></table></figure>
+<p>Запуск Syft для .sif контейнера:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syft --output cyclonedx-json=&lt;output-file.json&gt; &lt;path/to/image&gt;.sif</span><br></pre></td></tr></table></figure>
+<p>Запуск Syft для репозитория в папке:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syft --output cyclonedx-json==&lt;output-file.json&gt; dir:&lt;path/to/dir&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Заключение"><a href="#Заключение" class="headerlink" title="Заключение"></a>Заключение</h3><p>Спецификация ПО играет важную роль в практике SCA. SBOM контролирует все компоненты, которые используются в исходном коде, и автоматизирует проверку их защищенности – это позволяет разработчикам быстрее обнаруживать и устранять проблемы безопасности. Поэтому создавать и поддерживать SBOM сегодня полезно всем компаниям.</p>
+<p>Надеемся, что эта статья поможет выбрать инструмент генерации SBOM под ваши нужды и благодаря этому повысить безопасность ваших продуктов.</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://blog.kubernest.com/2024/11/12/SCA/instruction/" data-id="cm3ypx4cg00009kwl7hkg645c" class="article-share-link"><i class="fa fa-share"></i>Поделиться</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "author": {
+            "@type": "Person",
+            "name": "авторы проекта kubernest"
+        },
+        "headline": "Инструкция по SCA, генерация SBOM, инструменты, отличия",
+        "image": "https://blog.kubernest.com/images/sca-sbom.jpg",
+        "keywords": "InfoSec, Software Composition Analysis",
+        "genre": "InfoSec Software Composition Analysis",
+        "datePublished": "2024-11-12",
+        "dateCreated": "2024-11-12",
+        "dateModified": "2024-11-26",
+        "url": "https://blog.kubernest.com/2024/11/12/SCA/instruction/",
+        "description": "Нужен ли SCA?Анализ сторонних компонентов ПО становится всё более актуальным в свете увеличения числа уязвимостей в открытом исходном коде. Популярные репозитории содержат более 20 тысяч потенциально ",
+        "wordCount": 2081
+    }
+</script>
+
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="vk_comments"></div>
+    <script type="text/javascript">
+      window.onload = function () {
+      VK.init({apiId: 52539355, onlyWidgets: true});
+      VK.Widgets.Comments("vk_comments", {limit: 20, attach: "*", autoPublish: 1, pageUrl: "https://blog.kubernest.com/2024/11/12/SCA/instruction/"});
+    }
+   </script>
+
+    
+    </section>
+
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>Подписаться:</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="vk" href="https://vk.com/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-vk"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="telegram" href="https://t.me/kubernest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-telegram"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="youtube" href="https://www.youtube.com/c/KuberNest" target="_blank" rel="noopener">
+                        <i class="icon fa fa-youtube"></i>
+                    </a>
+                </li>
+                
+            
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="twitter" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-twitter"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="facebook" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-facebook"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/atom.xml" target="_blank" rel="noopener">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2024/11/11/observability/engineering-practical/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">старые</strong>
+        <p class="article-nav-title">Observability Engineering (Инженерия Наблюдаемости) - практическое руководство для современных DevOps</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">недавние</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/11/12/SCA/instruction/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/sca-sbom.jpg)" alt="Инструкция по SCA, генерация SBOM, инструменты, отличия" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/InfoSec/">InfoSec</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/InfoSec/Software-Composition-Analysis/">Software Composition Analysis</a></p>
+                            <p class="item-title"><a href="/2024/11/12/SCA/instruction/" class="title">Инструкция по SCA, генерация SBOM, инструменты, отличия</a></p>
+                            <p class="item-date"><time datetime="2024-11-12T10:18:00.000Z" itemprop="datePublished">2024-11-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/11/11/observability/engineering-practical/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/observability-engineering-1.webp)" alt="Observability Engineering (Инженерия Наблюдаемости) - практическое руководство для современных DevOps" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a></p>
+                            <p class="item-title"><a href="/2024/11/11/observability/engineering-practical/" class="title">Observability Engineering (Инженерия Наблюдаемости) - практическое руководство для современных DevOps</a></p>
+                            <p class="item-date"><time datetime="2024-11-11T10:18:00.000Z" itemprop="datePublished">2024-11-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/11/01/observability/tracing/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/open-telemetry-easy1.png)" alt="Трейсинг в Go — это просто, как дважды два" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/%D0%9Ebservability/">Оbservability</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a></p>
+                            <p class="item-title"><a href="/2024/11/01/observability/tracing/" class="title">Трейсинг в Go — это просто, как дважды два</a></p>
+                            <p class="item-date"><time datetime="2024-11-01T10:20:00.000Z" itemprop="datePublished">2024-11-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/12/SCA/risks/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/seqtesting.jpg)" alt="Риски использования уязвимых зависимостей в вашем проекте и как SCA помогает ими управлять" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/InfoSec/">InfoSec</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/InfoSec/Software-Composition-Analysis/">Software Composition Analysis</a></p>
+                            <p class="item-title"><a href="/2024/10/12/SCA/risks/" class="title">Риски использования уязвимых зависимостей в вашем проекте и как SCA помогает ими управлять</a></p>
+                            <p class="item-date"><time datetime="2024-10-12T09:18:00.000Z" itemprop="datePublished">2024-10-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2024/10/12/SCA/sca/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/sca.jpg)" alt="SCA (анализ состава программного обеспечения)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/InfoSec/">InfoSec</a><i class="icon fa fa-angle-right"></i><a class="article-category-link" href="/categories/InfoSec/Software-Composition-Analysis/">Software Composition Analysis</a></p>
+                            <p class="item-title"><a href="/2024/10/12/SCA/sca/" class="title">SCA (анализ состава программного обеспечения)</a></p>
+                            <p class="item-date"><time datetime="2024-10-12T09:18:00.000Z" itemprop="datePublished">2024-10-12</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Категории</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">30</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/">Algorithms</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/Algorithms/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/">GRPC</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/GRPC/Sort/">Sort</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">28</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/%D0%A1%D1%82%D0%B0%D1%80%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/InfoSec/">InfoSec</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/InfoSec/Software-Composition-Analysis/">Software Composition Analysis</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/">Kafka</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/">Старт</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Kafka/%D0%A1%D1%82%D0%B0%D1%80%D1%82/Consumer-Group/">Consumer Group</a><span class="category-list-count">1</span></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/">Вопрос-Ответ</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Defer/">Defer</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Generics/">Generics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Panic/">Panic</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SOLID/">SOLID</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/SSA/">SSA</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/Select-case/">Select-case</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D0%BD%D0%BA%D0%B0-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85/">Гонка данных</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%93%D0%BE%D1%80%D1%83%D1%82%D0%B8%D0%BD%D1%8B/">Горутины</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/">Интерфейсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9A%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82/">Контекст</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9C%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B-%D0%B8-%D1%81%D0%BB%D0%B0%D0%B9%D1%81%D1%8B/">Массивы и слайсы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9E%D0%B1%D1%89%D0%B8%D0%B5/">Общие</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%B0%D0%BA%D0%B5%D1%82%D1%8B/">Пакеты</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA/">Планировщик</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%9F%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D1%8B-%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8/">Примитивы синхронизации</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D0%BE%D0%BA%D0%B8/">Строки</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B/">Структуры</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A2%D0%B8%D0%BF%D1%8B/">Типы</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A3%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8/">Указатели</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81-%D0%9E%D1%82%D0%B2%D0%B5%D1%82/%D0%A5%D0%B5%D1%88-%D0%BC%D0%B0%D0%BF%D1%8B/">Хеш-мапы</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/">Оbservability</a><span class="category-list-count">6</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/Observability-Engineering/">Observability Engineering</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9Ebservability/OpenTelemetry/">OpenTelemetry</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/">ОС</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/CPU-cache/">CPU cache</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/C%D0%B5%D1%82%D1%8C/">Cеть</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/Namespaces/">Namespaces</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%D0%9E%D0%A1/%D0%9F%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%9ES/">Планировщик ОS</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">архивы</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">ноябрь 2024</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/10/">октябрь 2024</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/08/">август 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">июль 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">июнь 2024</a><span class="archive-list-count">39</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">Тэги</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Q-A/" rel="tag">Golang, Q&A</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/InfoSec-Software-Composition-Analysis/" rel="tag">InfoSec, Software Composition Analysis</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka-Consumer-Group/" rel="tag">Kafka, Consumer Group</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Logs/" rel="tag">Оbservability, Logs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-Observability-Engineering/" rel="tag">Оbservability, Observability Engineering</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%D0%9Ebservability-OpenTelemetry/" rel="tag">Оbservability, OpenTelemetry</a><span class="tag-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">Облако тэгов</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Golang-Q-A/" style="font-size: 20px;">Golang, Q&A</a> <a href="/tags/InfoSec-Software-Composition-Analysis/" style="font-size: 16.67px;">InfoSec, Software Composition Analysis</a> <a href="/tags/Kafka-Consumer-Group/" style="font-size: 10px;">Kafka, Consumer Group</a> <a href="/tags/%D0%9Ebservability-Logs/" style="font-size: 10px;">Оbservability, Logs</a> <a href="/tags/%D0%9Ebservability-Observability-Engineering/" style="font-size: 13.33px;">Оbservability, Observability Engineering</a> <a href="/tags/%D0%9Ebservability-OpenTelemetry/" style="font-size: 16.67px;">Оbservability, OpenTelemetry</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">ссылки</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://vk.com/kubernest">мы в vk</a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://www.youtube.com/c/Kubernest">мы в youtube</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2024 авторы проекта kubernest</p>
+                
+                <p>Powered by <a href="https://designest.ru/" target="_blank">DESIGNest Studio Ltd</a></p>
+                
+            </div>
+            <div class="footer-plugins">
+                
+			<!-- Yandex.RTB R-A-1394392-1 -->
+			<div id="yandex_rtb_R-A-1394392-1"></div>
+			<script>window.yaContextCb.push(()=>{Ya.Context.AdvManager.render({renderTo: 'yandex_rtb_R-A-1394392-1',  blockId: 'R-A-1394392-1' }) })</script>
+                
+              
+    
+
+
+            </div>
+        </div>
+    </div>
+</footer>                                                                                            
+
+    </div>
+    
+    
+    <script type="text/javascript">
+    var vk_shortname = 'true';
+    (function() {
+    var vk = document.createElement('script');
+    vk.type = 'text/javascript';
+    vk.async = true;
+    vk.src = '//vk.com/js/api/openapi.js?169'; 
+    vk.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+    || document.getElementsByTagName('body')[0]).appendChild(vk);
+    })();
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+    
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+</body>
+</html>
