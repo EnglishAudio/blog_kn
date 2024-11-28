@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.kubernest.com/2021/01/14/architecture/integration-patterns/</loc>
+    
+    <lastmod>2024-11-28</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.kubernest.com/2021/01/15/algorithms/cripto/aes/</loc>
+    
+    <lastmod>2024-11-28</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.kubernest.com/2021/01/12/architecture/qa/</loc>
     
     <lastmod>2024-11-28</lastmod>
@@ -534,6 +552,13 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://blog.kubernest.com/tags/InfoSec-AES/</loc>
+    <lastmod>2024-11-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
@@ -965,6 +990,13 @@
   
   <url>
     <loc>https://blog.kubernest.com/categories/Architecture/Stateless/</loc>
+    <lastmod>2024-11-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.kubernest.com/categories/Golang/Algorithms/Cripto/</loc>
     <lastmod>2024-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
